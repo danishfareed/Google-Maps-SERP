@@ -1,0 +1,31 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Scan {
+  id          String      @id @default(cuid())
+  keyword     String
+  createdAt   DateTime    @default(now())
+  status      String      @default("PENDING") // PENDING, RUNNING, COMPLETED, FAILED
+  centerLat   Float
+  centerLng   Float
+  radius      Float
+  gridSize    Int         @default(3) // e.g., 3x3, 5x5
+  results     Result[]
+}
+
+model Result {
+  id           String   @id @default(cuid())
+  scanId       String
+  scan         Scan     @relation(fields: [scanId], references: [id])
+  lat          Float
+  lng          Float
+  rank         Int?     // Rank of the target business (null if not found)
+  targetName   String?  // Target business name to track
+  topResults   Json     // List of top 20 businesses found at this point
+  capturedAt   DateTime @default(now())
+}

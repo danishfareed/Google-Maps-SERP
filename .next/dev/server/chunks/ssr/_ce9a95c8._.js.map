@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/danish/codeplayground/GMBserp/src/app/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\nimport \"./globals.css\";\n\nexport const metadata: Metadata = {\n    title: \"GMB Serp Tracker\",\n    description: \"Local SEO Grid Rank Tracker\",\n};\n\nexport default function RootLayout({\n    children,\n}: Readonly<{\n    children: React.ReactNode;\n}>) {\n    return (\n        <html lang=\"en\">\n            <body className=\"antialiased\">\n                {children}\n            </body>\n        </html>\n    );\n}\n"],"names":[],"mappings":";;;;;;;;;AAGO,MAAM,WAAqB;IAC9B,OAAO;IACP,aAAa;AACjB;AAEe,SAAS,WAAW,EAC/B,QAAQ,EAGV;IACE,qBACI,8OAAC;QAAK,MAAK;kBACP,cAAA,8OAAC;YAAK,WAAU;sBACX;;;;;;;;;;;AAIjB"}},
+    {"offset": {"line": 38, "column": 0}, "map": {"version":3,"sources":["file:///Users/danish/codeplayground/GMBserp/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-rsc']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,4HACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0]}}]
+}
