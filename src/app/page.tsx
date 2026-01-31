@@ -95,30 +95,30 @@ export default function DashboardPage() {
                     </div>
                 </Card>
 
-                <Card noPadding className="h-full bg-blue-600 text-white border-none shadow-lg shadow-blue-200 overflow-hidden relative group md:col-span-2">
+                <Card noPadding className="h-full bg-slate-900 text-white border-none shadow-lg shadow-slate-200 overflow-hidden relative group md:col-span-2">
                     <div className="h-full p-6 flex flex-col justify-between relative z-10">
                         <div className="flex items-start justify-between">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <div className="p-1 bg-white/20 rounded-md">
-                                        <Zap size={14} className="text-white fill-white" />
+                                    <div className="p-1 bg-blue-500/20 rounded-md">
+                                        <Zap size={14} className="text-blue-400 fill-blue-400" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-100">Pro Tip</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Pro Tip</span>
                                 </div>
                                 <h3 className="text-xl font-bold text-white tracking-tight">Category Optimization</h3>
-                                <p className="text-white text-sm leading-relaxed opacity-100 max-w-[280px]">
-                                    Increase visibility by refining your <strong className="text-blue-200">GMB categories</strong> to match high-volume intent.
+                                <p className="text-slate-300 text-sm leading-relaxed max-w-[280px]">
+                                    Increase visibility by refining your <strong className="text-white">GMB categories</strong> to match high-volume intent.
                                 </p>
                             </div>
-                            <div className="bg-white/10 p-2 rounded-lg backdrop-blur-md group-hover:scale-110 transition-transform">
-                                <List className="text-white" size={20} />
+                            <div className="bg-white/5 p-2 rounded-lg backdrop-blur-md group-hover:scale-110 transition-transform">
+                                <List className="text-slate-400" size={20} />
                             </div>
                         </div>
-                        <Link href="/help" className="text-sm font-bold text-white hover:text-blue-100 flex items-center gap-1 mt-4 transition-colors">
+                        <Link href="/help" className="text-sm font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 mt-4 transition-colors">
                             Read Strategy Guide <ArrowRight size={14} />
                         </Link>
                     </div>
-                    <div className="absolute -right-8 -bottom-8 opacity-10 pointer-events-none group-hover:scale-125 transition-transform duration-700">
+                    <div className="absolute -right-8 -bottom-8 opacity-5 pointer-events-none group-hover:scale-125 transition-transform duration-700">
                         <Activity size={160} className="text-white" />
                     </div>
                 </Card>
