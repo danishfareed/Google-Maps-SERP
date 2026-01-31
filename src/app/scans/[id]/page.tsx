@@ -2,9 +2,11 @@ import { prisma } from '@/lib/prisma';
 import { MapPin, Calendar, Target, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default async function ScanReportPage({ params }: { params: { id: string } }) {
+export default async function ScanReportPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+
     const scan = await prisma.scan.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { results: true },
     });
 
