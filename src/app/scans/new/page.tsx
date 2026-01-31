@@ -18,7 +18,8 @@ import {
     Clock,
     Navigation,
     Store,
-    Maximize2
+    Maximize2,
+    Plus
 } from 'lucide-react';
 import { Card, Button, Input, Select, Badge } from '@/components/ui';
 import {
@@ -133,13 +134,17 @@ export default function NewScanPage() {
 
     return (
         <div className="max-w-6xl mx-auto py-10">
-            <div className="mb-12 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-600 text-white mb-4 shadow-lg shadow-blue-500/20">
-                    <Target size={24} />
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                            <Plus size={20} />
+                        </div>
+                        <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight">New Ranking Report</h1>
+                    </div>
+                    <p className="text-xs text-gray-500 font-bold ml-1 uppercase tracking-widest opacity-70">Initialize Spatial Intelligence Grid</p>
                 </div>
-                <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight">New Ranking Report</h1>
-                <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-[2px]">Initialize Spatial Intelligence Grid</p>
-            </div>
+            </header>
 
             {/* Stepper */}
             <div className="mb-12">
@@ -502,7 +507,7 @@ export default function NewScanPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

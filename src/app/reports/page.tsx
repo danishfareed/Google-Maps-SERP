@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { FileText, Download, TrendingUp, Calendar, MapPin, Search } from 'lucide-react';
+import { BarChart3, Download, TrendingUp, Calendar, MapPin, Search } from 'lucide-react';
 import { Card, Button, Badge } from '@/components/ui';
 
 export default async function ReportsPage() {
@@ -11,12 +11,12 @@ export default async function ReportsPage() {
     });
 
     return (
-        <div className="max-w-7xl mx-auto space-y-8">
+        <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                            <FileText size={20} />
+                            <BarChart3 size={20} />
                         </div>
                         <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Reports Library</h1>
                     </div>
@@ -42,7 +42,7 @@ export default async function ReportsPage() {
                                     <td colSpan={5} className="py-32 text-center">
                                         <div className="flex flex-col items-center justify-center">
                                             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 ring-1 ring-gray-100">
-                                                <FileText size={24} className="text-gray-300" />
+                                                <BarChart3 size={24} className="text-gray-300" />
                                             </div>
                                             <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">No Reports Found</h3>
                                             <p className="text-gray-400 mt-1 text-xs font-medium">Completed scans will appear here.</p>
