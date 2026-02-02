@@ -3,8 +3,9 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { exportAllScansToXLSX } from '@/lib/export';
-import { Search, ChevronRight, Filter, Download, Plus, Calendar, MapPin, Grid, BarChart3, MoreVertical, Trash2 } from 'lucide-react';
+import { Search, ChevronRight, Filter, Download, Plus, Calendar, MapPin, Grid, BarChart3, MoreVertical, Trash2, RefreshCw } from 'lucide-react';
 import { Button, Badge, Card, Input, Select } from '@/components/ui';
+import { useRouter } from 'next/navigation';
 
 interface Scan {
     id: string;
@@ -19,12 +20,50 @@ interface Scan {
 }
 
 export default function ScansPage({ initialScans }: { initialScans: Scan[] }) {
+    const router = useRouter();
+    const [scans, setScans] = useState<Scan[]>(initialScans);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
+    const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+    const handleDelete = async (id: string, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!confirm('Are you sure you want to delete this report?')) return;
+        setIsDeleting(id);
+        try {
+            const res = await fetch(`/api/scans/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                setScans(prev => prev.filter(s => s.id !== id));
+            }
+        } catch (err) {
+            console.error('Delete failed:', err);
+        } finally {
+            setIsDeleting(null);
+        }
+    };
+
+    const handleRerun = async (id: string, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!confirm('Clear all results and rerun this scan?')) return;
+        try {
+            const res = await fetch(`/api/scans/${id}/rerun`, { method: 'POST' });
+            const data = await res.json();
+            if (res.ok) {
+                router.push(`/scans/${id}`);
+            } else {
+                alert(`Rerun Failed: ${data.details || data.error || 'Unknown error'}`);
+            }
+        } catch (err: any) {
+            console.error('Rerun failed:', err);
+            alert(`Rerun Failed: ${err.message}`);
+        }
+    };
 
     const filteredScans = useMemo(() => {
-        return initialScans
+        return scans
             .filter(scan => {
                 const matchesSearch = scan.keyword.toLowerCase().includes(searchQuery.toLowerCase());
                 const matchesStatus = statusFilter === 'all' || scan.status.toLowerCase() === statusFilter.toLowerCase();
@@ -36,7 +75,7 @@ export default function ScansPage({ initialScans }: { initialScans: Scan[] }) {
                 if (sortBy === 'keyword') return a.keyword.localeCompare(b.keyword);
                 return 0;
             });
-    }, [initialScans, searchQuery, statusFilter, sortBy]);
+    }, [scans, searchQuery, statusFilter, sortBy]);
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -187,7 +226,21 @@ export default function ScansPage({ initialScans }: { initialScans: Scan[] }) {
                                                         View Results
                                                     </Button>
                                                 </Link>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={(e) => handleRerun(scan.id, e)}
+                                                    className="h-8 w-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50"
+                                                >
+                                                    <RefreshCw size={14} />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={(e) => handleDelete(scan.id, e)}
+                                                    isLoading={isDeleting === scan.id}
+                                                    className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                                                >
                                                     <Trash2 size={14} />
                                                 </Button>
                                             </div>

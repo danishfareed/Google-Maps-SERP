@@ -9,8 +9,6 @@ export async function POST() {
             { name: 'ShiftyTR', url: 'https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt' },
             { name: 'Monosans', url: 'https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt' },
             { name: 'ProxyListPlus', url: 'https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt' },
-            { name: 'ProxyListDownload', url: 'https://www.proxy-list.download/api/v1/get?type=http' },
-            { name: 'ProxyScan', url: 'https://www.proxyscan.io/download?type=http' }
         ];
 
         // Safety Check: Check for active scans
@@ -69,7 +67,36 @@ export async function POST() {
             };
         }).filter(p => p.host && !isNaN(p.port));
 
-        console.log(`[ProxyFetch] Saving ${proxyData.length} unique proxies...`);
+        console.log(`[ProxyFetch] Performing quality check on 100 discovered routing pairs...`);
+        logs.push('Evaluating routing quality for 100 candidates...');
+
+        const { validateProxyBatch } = await import('@/lib/proxy-tester');
+        const testPool = proxyData.slice(0, 100);
+        const testResults = await validateProxyBatch(testPool, 20);
+
+        // Map all proxies to their final state
+        const processedProxies = proxyData.map(p => {
+            const testResult = testResults.find(r => r.host === p.host && r.port === p.port);
+
+            if (testResult) {
+                return {
+                    ...p,
+                    status: testResult.success ? 'ACTIVE' as const : 'DEAD' as const,
+                    lastTestedAt: new Date()
+                };
+            }
+
+            return {
+                ...p,
+                status: 'UNTESTED' as const
+            };
+        });
+
+        const activeCount = processedProxies.filter(p => p.status === 'ACTIVE').length;
+        console.log(`[ProxyFetch] Quality Check: ${activeCount}/${testPool.length} verified routes.`);
+        logs.push(`Quality Filter: Found ${activeCount} verified and ${proxyData.length - testPool.length} potential routes.`);
+
+        console.log(`[ProxyFetch] Saving ${processedProxies.length} proxies to pool...`);
 
         // SQLite doesn't support skipDuplicates in createMany. 
         // We filter out existing proxies manually to avoid unique constraint violations.
@@ -78,24 +105,66 @@ export async function POST() {
         });
 
         const existingKeys = new Set(existingProxies.map((p: any) => `${p.host}:${p.port}`));
-        const newProxies = proxyData.filter(p => !existingKeys.has(`${p.host}:${p.port}`));
+        const newProxies = processedProxies.filter(p => !existingKeys.has(`${p.host}:${p.port}`));
 
-        console.log(`[ProxyFetch] Detected ${newProxies.length} new unique proxies (Filtered ${proxyData.length - newProxies.length} duplicates)`);
+        console.log(`[ProxyFetch] Pool has ${existingProxies.length} existing. Detected ${newProxies.length} new unique from ${processedProxies.length} candidates.`);
+        logs.push(`Deduplication: ${existingKeys.size} already in pool, ${newProxies.length} new discovered.`);
 
         let count = 0;
+        let errors = 0;
+        let firstError = '';
+
         if (newProxies.length > 0) {
-            const result = await (prisma as any).proxy.createMany({
-                data: newProxies
-            });
-            count = result.count;
+            for (const p of newProxies) {
+                try {
+                    await (prisma as any).proxy.create({
+                        data: {
+                            host: p.host,
+                            port: p.port,
+                            type: p.type,
+                            enabled: p.enabled,
+                            status: p.status,
+                            lastTestedAt: 'lastTestedAt' in p ? p.lastTestedAt : undefined
+                        }
+                    });
+                    count++;
+                } catch (err: any) {
+                    // Try fallback for stale schema
+                    try {
+                        await (prisma as any).proxy.create({
+                            data: {
+                                host: p.host,
+                                port: p.port,
+                                type: p.type,
+                                enabled: p.enabled
+                            }
+                        });
+                        count++;
+                        // If fallback works, don't increment error, but maybe log a warning once
+                        if (!firstError) firstError = 'Schema mismatch: Saved without status fields.';
+                    } catch (fallbackErr: any) {
+                        errors++;
+                        if (errors === 1) firstError = err.message;
+                        if (errors <= 5) {
+                            console.error(`[ProxyFetch] Insertion error:`, err.message);
+                        }
+                    }
+                }
+            }
         }
 
-        console.log(`[ProxyFetch] Sync complete. Added ${count} new proxies.`);
+        const currentCount = await (prisma as any).proxy.count();
+        console.log(`[ProxyFetch] Sync complete. Added ${count} new. Total in pool: ${currentCount}. Errors: ${errors}`);
 
         return NextResponse.json({
             success: true,
             sources: sources.map(s => s.name),
-            logs: [...logs, `[SYNC] Added ${count} new unique routing coordinates.`],
+            logs: [
+                ...logs,
+                `[SYNC] Completed: ${count} added, ${processedProxies.length - newProxies.length} skipped duplicates.`,
+                `[STATS] Total routing units in pool: ${currentCount}.`,
+                ...(errors > 0 ? [`[WARN] ${errors} coordinate pairs failed to register. First Error: ${firstError}`] : [])
+            ],
             count: count
         });
 

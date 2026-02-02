@@ -32,8 +32,8 @@ export function generateGrid(
     const startLat = centerLat - latDelta;
     const startLng = centerLng - lngDelta;
 
-    const latStep = (latDelta * 2) / (gridSize - 1);
-    const lngStep = (lngDelta * 2) / (gridSize - 1);
+    const latStep = gridSize > 1 ? (latDelta * 2) / (gridSize - 1) : 0;
+    const lngStep = gridSize > 1 ? (lngDelta * 2) / (gridSize - 1) : 0;
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {

@@ -517,12 +517,13 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$map$2d$pin$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MapPin$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/map-pin.js [app-client] (ecmascript) <export default as MapPin>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/calendar.js [app-client] (ecmascript) <export default as Calendar>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$left$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronLeft$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-left.js [app-client] (ecmascript) <export default as ChevronLeft>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/refresh-cw.js [app-client] (ecmascript) <export default as RefreshCw>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
 ;
 ;
 ;
 ;
-function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare }) {
+function ScanHeader({ scan, onStop, onRerun, onDelete, onExportXLSX, onExportPDF, onShare }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "flex items-center justify-between",
         children: [
@@ -537,12 +538,12 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                             className: "text-gray-600"
                         }, void 0, false, {
                             fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                            lineNumber: 19,
+                            lineNumber: 20,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                        lineNumber: 18,
+                        lineNumber: 19,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -556,12 +557,12 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                             size: 20
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                            lineNumber: 24,
+                                            lineNumber: 25,
                                             columnNumber: 29
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                        lineNumber: 23,
+                                        lineNumber: 24,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -569,13 +570,13 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                         children: scan.keyword
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                        lineNumber: 26,
+                                        lineNumber: 27,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 22,
+                                lineNumber: 23,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -587,7 +588,7 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                         children: scan.status
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                        lineNumber: 31,
+                                        lineNumber: 32,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -601,7 +602,7 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                                         className: "text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                                        lineNumber: 33,
+                                                        lineNumber: 34,
                                                         columnNumber: 73
                                                     }, this),
                                                     " ",
@@ -611,7 +612,7 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                                lineNumber: 33,
+                                                lineNumber: 34,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -622,7 +623,7 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                                         className: "text-blue-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                                        lineNumber: 34,
+                                                        lineNumber: 35,
                                                         columnNumber: 73
                                                     }, this),
                                                     " ",
@@ -630,36 +631,57 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                                lineNumber: 34,
+                                                lineNumber: 35,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                        lineNumber: 32,
+                                        lineNumber: 33,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 30,
+                                lineNumber: 31,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                        lineNumber: 21,
+                        lineNumber: 22,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                lineNumber: 17,
+                lineNumber: 18,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "flex items-center gap-2",
                 children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                        variant: "outline",
+                        size: "sm",
+                        onClick: onRerun,
+                        className: "bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100 font-bold",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
+                                size: 14,
+                                className: "mr-2"
+                            }, void 0, false, {
+                                fileName: "[project]/src/components/scans/ScanHeader.tsx",
+                                lineNumber: 42,
+                                columnNumber: 21
+                            }, this),
+                            " Rerun"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/components/scans/ScanHeader.tsx",
+                        lineNumber: 41,
+                        columnNumber: 17
+                    }, this),
                     (scan.status === 'RUNNING' || scan.status === 'PENDING') && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                         variant: "destructive",
                         size: "sm",
@@ -670,14 +692,14 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                 className: "mr-2"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 42,
+                                lineNumber: 46,
                                 columnNumber: 25
                             }, this),
                             " Stop Scan"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                        lineNumber: 41,
+                        lineNumber: 45,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -691,14 +713,14 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                 className: "mr-2"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 46,
+                                lineNumber: 50,
                                 columnNumber: 21
                             }, this),
                             " Delete"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                        lineNumber: 45,
+                        lineNumber: 49,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -714,14 +736,14 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                         className: "mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                        lineNumber: 50,
+                                        lineNumber: 54,
                                         columnNumber: 25
                                     }, this),
                                     " XLSX"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 49,
+                                lineNumber: 53,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -734,20 +756,20 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                         className: "mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                        lineNumber: 53,
+                                        lineNumber: 57,
                                         columnNumber: 25
                                     }, this),
                                     " PDF"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 52,
+                                lineNumber: 56,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                        lineNumber: 48,
+                        lineNumber: 52,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -760,26 +782,26 @@ function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare
                                 className: "mr-2"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                                lineNumber: 56,
+                                lineNumber: 60,
                                 columnNumber: 71
                             }, this),
                             " Share"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                        lineNumber: 56,
+                        lineNumber: 60,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/scans/ScanHeader.tsx",
-                lineNumber: 39,
+                lineNumber: 40,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/scans/ScanHeader.tsx",
-        lineNumber: 16,
+        lineNumber: 17,
         columnNumber: 9
     }, this);
 }
@@ -803,7 +825,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 ;
 ;
 ;
-function AIInsights({ avgRank, scan, totalPoints }) {
+function AIInsights({ avgRank, scan, totalPoints, competitors }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
             className: "p-8 bg-white relative overflow-hidden border border-indigo-100 shadow-xl shadow-indigo-500/5",
@@ -819,34 +841,34 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                     size: 24
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                    lineNumber: 17,
+                                    lineNumber: 18,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                lineNumber: 16,
+                                lineNumber: 17,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                 className: "text-lg font-black text-gray-900 uppercase tracking-tight",
-                                children: "Strategic Intelligence"
+                                children: "Algorithmic Analysis"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                lineNumber: 19,
+                                lineNumber: 20,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-xs text-gray-400 font-bold uppercase tracking-widest mt-1",
-                                children: "AI Analysis v2.4"
+                                children: "Heuristic Performance Metrics"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                lineNumber: 20,
+                                lineNumber: 21,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                        lineNumber: 15,
+                        lineNumber: 16,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -862,7 +884,7 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                                 className: "w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                                lineNumber: 27,
+                                                lineNumber: 28,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -870,13 +892,13 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                                 children: "Market Dominance"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                                lineNumber: 28,
+                                                lineNumber: 29,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                        lineNumber: 26,
+                                        lineNumber: 27,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -884,13 +906,13 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                         children: avgRank <= 5 ? "You are effectively colonizing the top SERP positions in this radius. Your proximity-to-rank ratio is highly optimized." : avgRank <= 12 ? "Strong presence detected, but fringe zones are susceptible to local pack displacement. Focus on localized citations." : "Visibility is currently limited to high-proximity clusters. Expansion requires aggressive keyword-velocity increases."
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                        lineNumber: 30,
+                                        lineNumber: 31,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                lineNumber: 25,
+                                lineNumber: 26,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -903,7 +925,7 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                                 className: "w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                                lineNumber: 42,
+                                                lineNumber: 43,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -911,13 +933,13 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                                 children: "Geographic Health"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                                lineNumber: 43,
+                                                lineNumber: 44,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                        lineNumber: 41,
+                                        lineNumber: 42,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -925,13 +947,13 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                         children: scan.results.filter((r)=>!r.rank).length > totalPoints * 0.4 ? "Critical 'Dead Zones' detected in over 40% of the grid. Competitors are out-leveraging your business in peripheral sectors." : "Your coverage is relatively uniform. No major 'Black Hole' zones detected within the current scan radius."
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                        lineNumber: 45,
+                                        lineNumber: 46,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                lineNumber: 40,
+                                lineNumber: 41,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -944,57 +966,57 @@ function AIInsights({ avgRank, scan, totalPoints }) {
                                                 className: "w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                                lineNumber: 55,
+                                                lineNumber: 56,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "text-[10px] font-black text-gray-500 uppercase tracking-widest",
-                                                children: "Strategic Targets"
+                                                children: "Competitive Threat"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                                lineNumber: 56,
+                                                lineNumber: 57,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                        lineNumber: 54,
+                                        lineNumber: 55,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs font-medium leading-relaxed text-gray-700",
-                                        children: "Priority targets identified. Focus acquisition efforts on high-ranking but low-review competitors to disrupt their local pack stability."
+                                        children: competitors && competitors.length > 0 ? `Main threat: '${competitors[0].name}' dominates ${(competitors[0].appearances / totalPoints * 100).toFixed(0)}% of the grid. Analyze their citation profile for local pack displacement strategy.` : "No major competitors detected within the Top 20 across the grid. You are virtually unchallenged in this keyword sector."
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                        lineNumber: 58,
+                                        lineNumber: 59,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                                lineNumber: 53,
+                                lineNumber: 54,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/scans/AIInsights.tsx",
-                        lineNumber: 23,
+                        lineNumber: 24,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/scans/AIInsights.tsx",
-                lineNumber: 14,
+                lineNumber: 15,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/scans/AIInsights.tsx",
-            lineNumber: 13,
+            lineNumber: 14,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/scans/AIInsights.tsx",
-        lineNumber: 12,
+        lineNumber: 13,
         columnNumber: 9
     }, this);
 }
@@ -1639,27 +1661,72 @@ function ScanReportPage({ params }) {
             alert('Failed to delete scan');
         }
     };
+    // --- Competitor Analysis Logic ---
+    const competitorsList = (()=>{
+        const competitorsMap = new Map();
+        scan.results.forEach((r)=>{
+            const results = getTopResults(r.topResults);
+            results.forEach((biz)=>{
+                const entry = competitorsMap.get(biz.name) || {
+                    name: biz.name,
+                    avgRank: 0,
+                    appearances: 0,
+                    top3: 0,
+                    top10: 0,
+                    url: biz.url
+                };
+                entry.appearances += 1;
+                entry.avgRank += biz.rank;
+                if (biz.rank <= 3) entry.top3 += 1;
+                if (biz.rank <= 10) entry.top10 += 1;
+                competitorsMap.set(biz.name, entry);
+            });
+        });
+        return Array.from(competitorsMap.values()).map((c)=>({
+                ...c,
+                avgRank: c.avgRank / c.appearances
+            })).filter((c)=>c.name.toLowerCase() !== scan.businessName?.toLowerCase()).sort((a, b)=>b.appearances - a.appearances || a.avgRank - b.avgRank);
+    })();
+    const top3Competitors = competitorsList.slice(0, 3);
+    // --------------------------------
     const handleStop = async ()=>{
         if (!confirm('Stop this scan? Results collected so far will be saved.')) return;
         try {
-            const res = await fetch(`/api/scans/${scan.id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    status: 'STOPPED'
-                })
+            setLoading(true);
+            const res = await fetch(`/api/scans/${scan.id}/stop`, {
+                method: 'POST'
             });
+            const data = await res.json();
             if (res.ok) {
-                setScan((prev)=>prev ? {
-                        ...prev,
-                        status: 'STOPPED'
-                    } : null);
+                setScan(data.scan);
+            } else {
+                throw new Error(data.details || data.error || 'Failed to stop');
             }
         } catch (error) {
             console.error('Stop failed:', error);
-            alert('Failed to stop scan');
+            alert(`Stop Failed: ${error.message}`);
+        } finally{
+            setLoading(false);
+        }
+    };
+    const handleRerun = async ()=>{
+        if (!confirm('Clear all results and rerun this scan from scratch?')) return;
+        try {
+            setLoading(true);
+            const res = await fetch(`/api/scans/${scan.id}/rerun`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setScan(data.scan);
+            } else {
+                throw new Error(data.details || data.error || 'Failed to rerun');
+            }
+        } catch (error) {
+            console.error('Rerun failed:', error);
+            alert(`Rerun Failed: ${error.message}`);
+        } finally{
+            setLoading(false);
         }
     };
     const handleExportXLSX = ()=>{
@@ -1710,13 +1777,14 @@ function ScanReportPage({ params }) {
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$scans$2f$ScanHeader$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ScanHeader"], {
                 scan: scan,
                 onStop: handleStop,
+                onRerun: handleRerun,
                 onDelete: handleDelete,
                 onExportXLSX: handleExportXLSX,
                 onExportPDF: handleExportPDF,
                 onShare: handleShare
             }, void 0, false, {
                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                lineNumber: 204,
+                lineNumber: 270,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1733,14 +1801,14 @@ function ScanReportPage({ params }) {
                                         className: "text-blue-600"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                        lineNumber: 217,
+                                        lineNumber: 284,
                                         columnNumber: 25
                                     }, this),
                                     "Top Competitors Detected"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                lineNumber: 216,
+                                lineNumber: 283,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1751,172 +1819,148 @@ function ScanReportPage({ params }) {
                                 children: "View All Contributions"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                lineNumber: 220,
+                                lineNumber: 287,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                        lineNumber: 215,
+                        lineNumber: 282,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "grid grid-cols-1 md:grid-cols-3 gap-4",
-                        children: (()=>{
-                            const competitorsMap = new Map();
-                            scan.results.forEach((r)=>{
-                                const results = getTopResults(r.topResults);
-                                results.forEach((biz)=>{
-                                    const entry = competitorsMap.get(biz.name) || {
-                                        name: biz.name,
-                                        avgRank: 0,
-                                        appearances: 0,
-                                        top3: 0,
-                                        top10: 0,
-                                        url: biz.url
-                                    };
-                                    entry.appearances += 1;
-                                    entry.avgRank += biz.rank;
-                                    if (biz.rank <= 3) entry.top3 += 1;
-                                    if (biz.rank <= 10) entry.top10 += 1;
-                                    competitorsMap.set(biz.name, entry);
-                                });
-                            });
-                            const sorted = Array.from(competitorsMap.values()).map((c)=>({
-                                    ...c,
-                                    avgRank: c.avgRank / c.appearances
-                                })).filter((c)=>c.name.toLowerCase() !== scan.businessName?.toLowerCase()).sort((a, b)=>b.appearances - a.appearances || a.avgRank - b.avgRank).slice(0, 3);
-                            return sorted.map((comp, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
-                                    className: "p-4 border-l-4 border-l-blue-500 hover:shadow-lg transition-all",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex justify-between items-start mb-3",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "bg-blue-50 text-blue-600 font-black text-[10px] px-2 py-1 rounded uppercase",
-                                                    children: [
-                                                        "Rank #",
-                                                        idx + 1,
-                                                        " Share"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 263,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-[10px] text-gray-400 font-mono",
-                                                    children: [
-                                                        "Found in ",
-                                                        comp.appearances,
-                                                        " points"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 264,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 262,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                            className: "font-bold text-gray-900 truncate mb-2",
-                                            children: comp.name
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 266,
-                                            columnNumber: 33
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "grid grid-cols-2 gap-2",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "bg-gray-50 p-2 rounded-lg",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[9px] text-gray-400 uppercase font-bold",
-                                                            children: "Avg Rank"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 269,
-                                                            columnNumber: 41
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-sm font-black text-gray-900",
-                                                            children: [
-                                                                "#",
-                                                                comp.avgRank.toFixed(1)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 270,
-                                                            columnNumber: 41
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 268,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "bg-gray-50 p-2 rounded-lg",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[9px] text-gray-400 uppercase font-bold",
-                                                            children: "Top 3 Hits"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 273,
-                                                            columnNumber: 41
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-sm font-black text-emerald-600",
-                                                            children: comp.top3
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 274,
-                                                            columnNumber: 41
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 272,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 267,
-                                            columnNumber: 33
-                                        }, this)
-                                    ]
-                                }, idx, true, {
-                                    fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                    lineNumber: 261,
-                                    columnNumber: 29
-                                }, this));
-                        })()
+                        children: top3Competitors.map((comp, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                                className: "p-4 border-l-4 border-l-blue-500 hover:shadow-lg transition-all",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex justify-between items-start mb-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "bg-blue-50 text-blue-600 font-black text-[10px] px-2 py-1 rounded uppercase",
+                                                children: [
+                                                    "Rank #",
+                                                    idx + 1,
+                                                    " Share"
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                lineNumber: 295,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-[10px] text-gray-400 font-mono",
+                                                children: [
+                                                    "Found in ",
+                                                    comp.appearances,
+                                                    " points"
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                lineNumber: 296,
+                                                columnNumber: 33
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                        lineNumber: 294,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                        className: "font-bold text-gray-900 truncate mb-2",
+                                        children: comp.name
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                        lineNumber: 298,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "grid grid-cols-2 gap-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "bg-gray-50 p-2 rounded-lg",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-[9px] text-gray-400 uppercase font-bold",
+                                                        children: "Avg Rank"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                        lineNumber: 301,
+                                                        columnNumber: 37
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm font-black text-gray-900",
+                                                        children: [
+                                                            "#",
+                                                            comp.avgRank.toFixed(1)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                        lineNumber: 302,
+                                                        columnNumber: 37
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                lineNumber: 300,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "bg-gray-50 p-2 rounded-lg",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-[9px] text-gray-400 uppercase font-bold",
+                                                        children: "Top 3 Hits"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                        lineNumber: 305,
+                                                        columnNumber: 37
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm font-black text-emerald-600",
+                                                        children: comp.top3
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                        lineNumber: 306,
+                                                        columnNumber: 37
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                                lineNumber: 304,
+                                                columnNumber: 33
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                        lineNumber: 299,
+                                        columnNumber: 29
+                                    }, this)
+                                ]
+                            }, idx, true, {
+                                fileName: "[project]/src/app/scans/[id]/page.tsx",
+                                lineNumber: 293,
+                                columnNumber: 25
+                            }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                        lineNumber: 224,
+                        lineNumber: 291,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                lineNumber: 214,
+                lineNumber: 281,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$scans$2f$AIInsights$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AIInsights"], {
                 avgRank: avgRank,
                 scan: scan,
-                totalPoints: totalPoints
+                totalPoints: totalPoints,
+                competitors: competitorsList
             }, void 0, false, {
                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                lineNumber: 283,
+                lineNumber: 314,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1940,7 +1984,7 @@ function ScanReportPage({ params }) {
                                                     children: "Spatial View"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 293,
+                                                    lineNumber: 324,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1949,7 +1993,7 @@ function ScanReportPage({ params }) {
                                                     children: "Grid Status"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 299,
+                                                    lineNumber: 330,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1958,13 +2002,13 @@ function ScanReportPage({ params }) {
                                                     children: "Competitors"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 305,
+                                                    lineNumber: 336,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 292,
+                                            lineNumber: 323,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1975,7 +2019,7 @@ function ScanReportPage({ params }) {
                                                     children: "Market Share analysis"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 314,
+                                                    lineNumber: 345,
                                                     columnNumber: 37
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                     children: [
@@ -1989,7 +2033,7 @@ function ScanReportPage({ params }) {
                                                                     onChange: (e)=>setSearchQuery(e.target.value)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 318,
+                                                                    lineNumber: 349,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$list$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__List$3e$__["List"], {
@@ -1997,13 +2041,13 @@ function ScanReportPage({ params }) {
                                                                     size: 12
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 324,
+                                                                    lineNumber: 355,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 317,
+                                                            lineNumber: 348,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -2016,7 +2060,7 @@ function ScanReportPage({ params }) {
                                                                     children: "All Ranks"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 331,
+                                                                    lineNumber: 362,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -2024,7 +2068,7 @@ function ScanReportPage({ params }) {
                                                                     children: "Top 3 Only"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 332,
+                                                                    lineNumber: 363,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -2032,7 +2076,7 @@ function ScanReportPage({ params }) {
                                                                     children: "Top 10 Only"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 333,
+                                                                    lineNumber: 364,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -2040,13 +2084,13 @@ function ScanReportPage({ params }) {
                                                                     children: "Unranked"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 334,
+                                                                    lineNumber: 365,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 326,
+                                                            lineNumber: 357,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
@@ -2061,19 +2105,19 @@ function ScanReportPage({ params }) {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 338,
+                                                    lineNumber: 369,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 312,
+                                            lineNumber: 343,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                    lineNumber: 291,
+                                    lineNumber: 322,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2092,7 +2136,7 @@ function ScanReportPage({ params }) {
                                         onPointClick: (point)=>setSelectedPoint(point)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                        lineNumber: 344,
+                                        lineNumber: 375,
                                         columnNumber: 33
                                     }, this) : activeTab === 'list' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "h-full bg-white overflow-y-auto custom-scrollbar",
@@ -2119,7 +2163,7 @@ function ScanReportPage({ params }) {
                                                                                     children: "Grid Anchor"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 365,
+                                                                                    lineNumber: 396,
                                                                                     columnNumber: 65
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2131,13 +2175,13 @@ function ScanReportPage({ params }) {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 366,
+                                                                                    lineNumber: 397,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 364,
+                                                                            lineNumber: 395,
                                                                             columnNumber: 61
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2148,7 +2192,7 @@ function ScanReportPage({ params }) {
                                                                                     children: "Positional Rank"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 369,
+                                                                                    lineNumber: 400,
                                                                                     columnNumber: 65
                                                                                 }, this),
                                                                                 r.rank ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2160,7 +2204,7 @@ function ScanReportPage({ params }) {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 371,
+                                                                                    lineNumber: 402,
                                                                                     columnNumber: 69
                                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
                                                                                     variant: "outline",
@@ -2168,13 +2212,13 @@ function ScanReportPage({ params }) {
                                                                                     children: "MISSING"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 375,
+                                                                                    lineNumber: 406,
                                                                                     columnNumber: 69
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 368,
+                                                                            lineNumber: 399,
                                                                             columnNumber: 61
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2185,7 +2229,7 @@ function ScanReportPage({ params }) {
                                                                                     children: "Local Entities"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 379,
+                                                                                    lineNumber: 410,
                                                                                     columnNumber: 65
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2196,19 +2240,19 @@ function ScanReportPage({ params }) {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 380,
+                                                                                    lineNumber: 411,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 378,
+                                                                            lineNumber: 409,
                                                                             columnNumber: 61
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 363,
+                                                                    lineNumber: 394,
                                                                     columnNumber: 57
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2220,29 +2264,29 @@ function ScanReportPage({ params }) {
                                                                             size: 12
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 385,
+                                                                            lineNumber: 416,
                                                                             columnNumber: 79
                                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                                                             size: 12
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 385,
+                                                                            lineNumber: 416,
                                                                             columnNumber: 129
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                        lineNumber: 384,
+                                                                        lineNumber: 415,
                                                                         columnNumber: 61
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 383,
+                                                                    lineNumber: 414,
                                                                     columnNumber: 57
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 359,
+                                                            lineNumber: 390,
                                                             columnNumber: 53
                                                         }, this),
                                                         isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2255,34 +2299,34 @@ function ScanReportPage({ params }) {
                                                                         compact: true
                                                                     }, idx, false, {
                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                        lineNumber: 394,
+                                                                        lineNumber: 425,
                                                                         columnNumber: 69
                                                                     }, this))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                lineNumber: 392,
+                                                                lineNumber: 423,
                                                                 columnNumber: 61
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 391,
+                                                            lineNumber: 422,
                                                             columnNumber: 57
                                                         }, this)
                                                     ]
                                                 }, r.id, true, {
                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                    lineNumber: 358,
+                                                    lineNumber: 389,
                                                     columnNumber: 49
                                                 }, this);
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 353,
+                                            lineNumber: 384,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                        lineNumber: 352,
+                                        lineNumber: 383,
                                         columnNumber: 33
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "h-full bg-white overflow-y-auto no-scrollbar",
@@ -2300,7 +2344,7 @@ function ScanReportPage({ params }) {
                                                                     children: "Business Name"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 415,
+                                                                    lineNumber: 446,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2308,7 +2352,7 @@ function ScanReportPage({ params }) {
                                                                     children: "Appearances"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 416,
+                                                                    lineNumber: 447,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2316,7 +2360,7 @@ function ScanReportPage({ params }) {
                                                                     children: "Efficiency"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 417,
+                                                                    lineNumber: 448,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2324,18 +2368,18 @@ function ScanReportPage({ params }) {
                                                                     children: "Rank Stats"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 418,
+                                                                    lineNumber: 449,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                            lineNumber: 414,
+                                                            lineNumber: 445,
                                                             columnNumber: 49
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                        lineNumber: 413,
+                                                        lineNumber: 444,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -2375,7 +2419,7 @@ function ScanReportPage({ params }) {
                                                                                     children: comp.name
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 458,
+                                                                                    lineNumber: 489,
                                                                                     columnNumber: 69
                                                                                 }, this),
                                                                                 comp.name.toLowerCase() === scan.businessName?.toLowerCase() && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$index$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2384,13 +2428,13 @@ function ScanReportPage({ params }) {
                                                                                     children: "Target Account"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                    lineNumber: 460,
+                                                                                    lineNumber: 491,
                                                                                     columnNumber: 73
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 457,
+                                                                            lineNumber: 488,
                                                                             columnNumber: 65
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2408,7 +2452,7 @@ function ScanReportPage({ params }) {
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                        lineNumber: 465,
+                                                                                        lineNumber: 496,
                                                                                         columnNumber: 73
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2420,18 +2464,18 @@ function ScanReportPage({ params }) {
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                        lineNumber: 466,
+                                                                                        lineNumber: 497,
                                                                                         columnNumber: 73
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                lineNumber: 464,
+                                                                                lineNumber: 495,
                                                                                 columnNumber: 69
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 463,
+                                                                            lineNumber: 494,
                                                                             columnNumber: 65
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2447,7 +2491,7 @@ function ScanReportPage({ params }) {
                                                                                                 children: "Top 3"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 472,
+                                                                                                lineNumber: 503,
                                                                                                 columnNumber: 77
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2455,13 +2499,13 @@ function ScanReportPage({ params }) {
                                                                                                 children: comp.top3
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 473,
+                                                                                                lineNumber: 504,
                                                                                                 columnNumber: 77
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                        lineNumber: 471,
+                                                                                        lineNumber: 502,
                                                                                         columnNumber: 73
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2472,7 +2516,7 @@ function ScanReportPage({ params }) {
                                                                                                 children: "Top 10"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 476,
+                                                                                                lineNumber: 507,
                                                                                                 columnNumber: 77
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2480,24 +2524,24 @@ function ScanReportPage({ params }) {
                                                                                                 children: comp.top10
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 477,
+                                                                                                lineNumber: 508,
                                                                                                 columnNumber: 77
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                        lineNumber: 475,
+                                                                                        lineNumber: 506,
                                                                                         columnNumber: 73
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                lineNumber: 470,
+                                                                                lineNumber: 501,
                                                                                 columnNumber: 69
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 469,
+                                                                            lineNumber: 500,
                                                                             columnNumber: 65
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2513,7 +2557,7 @@ function ScanReportPage({ params }) {
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                        lineNumber: 483,
+                                                                                        lineNumber: 514,
                                                                                         columnNumber: 73
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2526,7 +2570,7 @@ function ScanReportPage({ params }) {
                                                                                                 }
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 485,
+                                                                                                lineNumber: 516,
                                                                                                 columnNumber: 77
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2536,7 +2580,7 @@ function ScanReportPage({ params }) {
                                                                                                 }
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 486,
+                                                                                                lineNumber: 517,
                                                                                                 columnNumber: 77
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2546,68 +2590,68 @@ function ScanReportPage({ params }) {
                                                                                                 }
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                                lineNumber: 487,
+                                                                                                lineNumber: 518,
                                                                                                 columnNumber: 77
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                        lineNumber: 484,
+                                                                                        lineNumber: 515,
                                                                                         columnNumber: 73
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                                lineNumber: 482,
+                                                                                lineNumber: 513,
                                                                                 columnNumber: 69
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                            lineNumber: 481,
+                                                                            lineNumber: 512,
                                                                             columnNumber: 65
                                                                         }, this)
                                                                     ]
                                                                 }, idx, true, {
                                                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                                    lineNumber: 456,
+                                                                    lineNumber: 487,
                                                                     columnNumber: 61
                                                                 }, this));
                                                         })()
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                        lineNumber: 421,
+                                                        lineNumber: 452,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                                lineNumber: 412,
+                                                lineNumber: 443,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                            lineNumber: 411,
+                                            lineNumber: 442,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                        lineNumber: 410,
+                                        lineNumber: 441,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/scans/[id]/page.tsx",
-                                    lineNumber: 342,
+                                    lineNumber: 373,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/scans/[id]/page.tsx",
-                            lineNumber: 289,
+                            lineNumber: 320,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                        lineNumber: 288,
+                        lineNumber: 319,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$scans$2f$PinInspectionSidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["PinInspectionSidebar"], {
@@ -2616,19 +2660,19 @@ function ScanReportPage({ params }) {
                         scan: scan
                     }, void 0, false, {
                         fileName: "[project]/src/app/scans/[id]/page.tsx",
-                        lineNumber: 504,
+                        lineNumber: 535,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/scans/[id]/page.tsx",
-                lineNumber: 286,
+                lineNumber: 317,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/scans/[id]/page.tsx",
-        lineNumber: 203,
+        lineNumber: 269,
         columnNumber: 9
     }, this);
 }

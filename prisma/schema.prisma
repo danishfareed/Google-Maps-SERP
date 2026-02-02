@@ -44,6 +44,8 @@ model Proxy {
   password     String?
   type         String   @default("RESIDENTIAL") // RESIDENTIAL, DATACENTER
   enabled      Boolean  @default(true)
+  status       String   @default("UNTESTED") // UNTESTED, ACTIVE, DEAD
+  lastTestedAt DateTime?
   createdAt    DateTime @default(now())
 
   @@unique([host, port])
@@ -62,4 +64,13 @@ model GlobalSetting {
   id    String @id @default(cuid())
   key   String @unique
   value String
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     String   @default("INFO") // INFO, WARN, ERROR, DEBUG
+  message   String
+  source    String?  // e.g., "SCANNER", "PROXY_FETCHER", "API"
+  details   String?  // JSON string for extra data
+  createdAt DateTime @default(now())
 }

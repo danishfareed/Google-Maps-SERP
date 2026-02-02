@@ -13,7 +13,8 @@ import {
     Calendar,
     ChevronRight,
     PanelLeftClose,
-    HelpCircle
+    HelpCircle,
+    Activity
 } from 'lucide-react';
 
 const navItems = [

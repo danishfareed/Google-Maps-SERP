@@ -84,14 +84,6 @@ async function POST() {
             {
                 name: 'ProxyListPlus',
                 url: 'https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt'
-            },
-            {
-                name: 'ProxyListDownload',
-                url: 'https://www.proxy-list.download/api/v1/get?type=http'
-            },
-            {
-                name: 'ProxyScan',
-                url: 'https://www.proxyscan.io/download?type=http'
             }
         ];
         // Safety Check: Check for active scans
@@ -148,7 +140,30 @@ async function POST() {
                 enabled: true
             };
         }).filter((p)=>p.host && !isNaN(p.port));
-        console.log(`[ProxyFetch] Saving ${proxyData.length} unique proxies...`);
+        console.log(`[ProxyFetch] Performing quality check on 100 discovered routing pairs...`);
+        logs.push('Evaluating routing quality for 100 candidates...');
+        const { validateProxyBatch } = await __turbopack_context__.A("[project]/src/lib/proxy-tester.ts [app-route] (ecmascript, async loader)");
+        const testPool = proxyData.slice(0, 100);
+        const testResults = await validateProxyBatch(testPool, 20);
+        // Map all proxies to their final state
+        const processedProxies = proxyData.map((p)=>{
+            const testResult = testResults.find((r)=>r.host === p.host && r.port === p.port);
+            if (testResult) {
+                return {
+                    ...p,
+                    status: testResult.success ? 'ACTIVE' : 'DEAD',
+                    lastTestedAt: new Date()
+                };
+            }
+            return {
+                ...p,
+                status: 'UNTESTED'
+            };
+        });
+        const activeCount = processedProxies.filter((p)=>p.status === 'ACTIVE').length;
+        console.log(`[ProxyFetch] Quality Check: ${activeCount}/${testPool.length} verified routes.`);
+        logs.push(`Quality Filter: Found ${activeCount} verified and ${proxyData.length - testPool.length} potential routes.`);
+        console.log(`[ProxyFetch] Saving ${processedProxies.length} proxies to pool...`);
         // SQLite doesn't support skipDuplicates in createMany. 
         // We filter out existing proxies manually to avoid unique constraint violations.
         const existingProxies = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.findMany({
@@ -158,22 +173,62 @@ async function POST() {
             }
         });
         const existingKeys = new Set(existingProxies.map((p)=>`${p.host}:${p.port}`));
-        const newProxies = proxyData.filter((p)=>!existingKeys.has(`${p.host}:${p.port}`));
-        console.log(`[ProxyFetch] Detected ${newProxies.length} new unique proxies (Filtered ${proxyData.length - newProxies.length} duplicates)`);
+        const newProxies = processedProxies.filter((p)=>!existingKeys.has(`${p.host}:${p.port}`));
+        console.log(`[ProxyFetch] Pool has ${existingProxies.length} existing. Detected ${newProxies.length} new unique from ${processedProxies.length} candidates.`);
+        logs.push(`Deduplication: ${existingKeys.size} already in pool, ${newProxies.length} new discovered.`);
         let count = 0;
+        let errors = 0;
+        let firstError = '';
         if (newProxies.length > 0) {
-            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.createMany({
-                data: newProxies
-            });
-            count = result.count;
+            for (const p of newProxies){
+                try {
+                    await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.create({
+                        data: {
+                            host: p.host,
+                            port: p.port,
+                            type: p.type,
+                            enabled: p.enabled,
+                            status: p.status,
+                            lastTestedAt: 'lastTestedAt' in p ? p.lastTestedAt : undefined
+                        }
+                    });
+                    count++;
+                } catch (err) {
+                    // Try fallback for stale schema
+                    try {
+                        await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.create({
+                            data: {
+                                host: p.host,
+                                port: p.port,
+                                type: p.type,
+                                enabled: p.enabled
+                            }
+                        });
+                        count++;
+                        // If fallback works, don't increment error, but maybe log a warning once
+                        if (!firstError) firstError = 'Schema mismatch: Saved without status fields.';
+                    } catch (fallbackErr) {
+                        errors++;
+                        if (errors === 1) firstError = err.message;
+                        if (errors <= 5) {
+                            console.error(`[ProxyFetch] Insertion error:`, err.message);
+                        }
+                    }
+                }
+            }
         }
-        console.log(`[ProxyFetch] Sync complete. Added ${count} new proxies.`);
+        const currentCount = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.count();
+        console.log(`[ProxyFetch] Sync complete. Added ${count} new. Total in pool: ${currentCount}. Errors: ${errors}`);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
             sources: sources.map((s)=>s.name),
             logs: [
                 ...logs,
-                `[SYNC] Added ${count} new unique routing coordinates.`
+                `[SYNC] Completed: ${count} added, ${processedProxies.length - newProxies.length} skipped duplicates.`,
+                `[STATS] Total routing units in pool: ${currentCount}.`,
+                ...errors > 0 ? [
+                    `[WARN] ${errors} coordinate pairs failed to register. First Error: ${firstError}`
+                ] : []
             ],
             count: count
         });

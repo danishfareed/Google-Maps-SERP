@@ -2,85 +2,187 @@ import { prisma } from './prisma';
 import { generateGrid } from './grid';
 import { scrapeGMB } from './scraper';
 import { chromium } from 'playwright';
+import { logger } from './logger';
+
+/**
+ * Derives regional settings based on coordinates.
+ * Ensures English language preference while matching local region markers.
+ */
+function getRegionalSettings(lat: number, lng: number) {
+    // Default to US English
+    let locale = 'en-US';
+    let timezoneId = 'UTC';
+
+    // Logic to detect major regions by coordinate bounds
+    if (lat > 24 && lat < 50 && lng > -125 && lng < -66) {
+        // USA
+        locale = 'en-US';
+        if (lng > -85) timezoneId = 'America/New_York';
+        else if (lng > -95) timezoneId = 'America/Chicago';
+        else if (lng > -107) timezoneId = 'America/Denver';
+        else timezoneId = 'America/Los_Angeles';
+    } else if (lat > 49 && lat < 61 && lng > -11 && lng < 2) {
+        // United Kingdom
+        locale = 'en-GB';
+        timezoneId = 'Europe/London';
+    } else if (lat > 35 && lat < 72 && lng > -10 && lng < 40) {
+        // Europe (using en- variants to keep language English)
+        locale = 'en-FR';
+        timezoneId = 'Europe/Paris';
+        if (lng > 20) timezoneId = 'Europe/Berlin';
+    } else if (lat > -48 && lat < -10 && lng > 110 && lng < 155) {
+        // Australia
+        locale = 'en-AU';
+        timezoneId = 'Australia/Sydney';
+    } else if (lat > 8 && lat < 37 && lng > 68 && lng < 98) {
+        // India
+        locale = 'en-IN';
+        timezoneId = 'Asia/Kolkata';
+    } else if (lat > 12 && lat < 35 && lng > 34 && lng < 60) {
+        // Middle East
+        locale = 'en-AE';
+        timezoneId = 'Asia/Dubai';
+    } else if (lat > 42 && lat < 83 && lng > -141 && lng < -52) {
+        // Canada
+        locale = 'en-CA';
+        timezoneId = 'America/Toronto';
+        if (lng < -110) timezoneId = 'America/Vancouver';
+    }
+
+    return { locale, timezoneId };
+}
 
 export async function runScan(scanId: string) {
-    const scan = await prisma.scan.findUnique({
-        where: { id: scanId },
-    });
-
-    if (!scan) throw new Error('Scan not found');
-
-    await prisma.scan.update({
-        where: { id: scanId },
-        data: { status: 'RUNNING' },
-    });
-
-    const points = scan.customPoints
-        ? JSON.parse(scan.customPoints)
-        : generateGrid(scan.centerLat, scan.centerLng, scan.radius, scan.gridSize, scan.shape as any);
-
-    // Fetch global settings
-    const [enabledProxies, proxySetting] = await Promise.all([
-        (prisma as any).proxy.findMany({ where: { enabled: true } }),
-        (prisma as any).globalSetting.findUnique({ where: { key: 'useSystemProxy' } })
-    ]);
-
-    const useSystemProxy = proxySetting ? proxySetting.value === 'true' : true;
-
     let browser: any = null;
     let context: any = null;
     let page: any = null;
     let currentProxyId: string | null = null;
-
-    async function initBrowser() {
-        if (browser) await browser.close();
-
-        const launchOptions: any = { headless: true };
-
-        if (!useSystemProxy && enabledProxies.length > 0) {
-            // Filter out the current failed proxy if possible
-            const availableProxies = currentProxyId
-                ? enabledProxies.filter(p => p.id !== currentProxyId)
-                : enabledProxies;
-
-            const p = availableProxies[Math.floor(Math.random() * availableProxies.length)] || enabledProxies[0];
-            currentProxyId = p.id;
-
-            launchOptions.proxy = {
-                server: `http://${p.host}:${p.port}`,
-                username: p.username || undefined,
-                password: p.password || undefined,
-            };
-            console.log(`[Scanner] Initializing with proxy: ${p.host}:${p.port}`);
-        } else {
-            console.log(`[Scanner] Initializing Direct System Connection`);
-        }
-
-        browser = await chromium.launch(launchOptions);
-        context = await browser.newContext({
-            viewport: { width: 1280, height: 800 },
-            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        });
-        await context.grantPermissions(['geolocation']);
-        page = await context.newPage();
-    }
+    let scan: any = null;
 
     try {
+        await logger.info(`[Launcher] Initializing scanner process...`, 'SCANNER', { scanId });
+
+        scan = await (prisma as any).scan.findUnique({
+            where: { id: scanId },
+        });
+
+        if (!scan) {
+            await logger.error(`[Launcher] Aborting: Scan ${scanId} not found in database.`, 'SCANNER');
+            return;
+        }
+
+        await (prisma as any).scan.update({
+            where: { id: scanId },
+            data: { status: 'RUNNING' },
+        });
+
+        await logger.info(`[Launcher] Status set to RUNNING for keyword: "${scan.keyword}"`, 'SCANNER');
+
+        const points = scan.customPoints
+            ? JSON.parse(scan.customPoints)
+            : generateGrid(scan.centerLat, scan.centerLng, scan.radius, scan.gridSize, scan.shape as any);
+
+        await logger.debug(`[Launcher] Generated ${points.length} coordinates for scan.`, 'SCANNER');
+
+        // Initial fetch of proxy settings
+        const proxySetting = await (prisma as any).globalSetting.findUnique({ where: { key: 'useSystemProxy' } });
+        const useSystemProxy = proxySetting ? proxySetting.value === 'true' : true;
+
+        async function initBrowser(failedProxyId?: string) {
+            await logger.debug('Initializing browser context...', 'SCANNER', { failedProxyId });
+            if (browser) await browser.close();
+
+            // If a proxy failed, mark it DEAD in the database immediately
+            if (failedProxyId) {
+                try {
+                    await (prisma as any).proxy.update({
+                        where: { id: failedProxyId },
+                        data: { status: 'DEAD', lastTestedAt: new Date() }
+                    });
+                } catch (err) {
+                    console.error('[Scanner] Failed to update proxy status:', err);
+                }
+            }
+
+            const launchOptions: any = { headless: true };
+
+            if (!useSystemProxy) {
+                // Fetch healthy proxies (ACTIVE or UNTESTED)
+                const availableProxies = await (prisma as any).proxy.findMany({
+                    where: {
+                        enabled: true,
+                        status: { in: ['ACTIVE', 'UNTESTED'] }
+                    }
+                });
+
+                if (availableProxies.length > 0) {
+                    // Prioritize ACTIVE proxies if available, otherwise use UNTESTED
+                    const activeOnes = availableProxies.filter((p: any) => p.status === 'ACTIVE');
+                    const pool = activeOnes.length > 0 ? activeOnes : availableProxies;
+
+                    const p = pool[Math.floor(Math.random() * pool.length)];
+                    currentProxyId = p.id;
+
+                    launchOptions.proxy = {
+                        server: `http://${p.host}:${p.port}`,
+                        username: p.username || undefined,
+                        password: p.password || undefined,
+                    };
+                }
+            }
+
+            try {
+                browser = await chromium.launch(launchOptions);
+            } catch (launchErr: any) {
+                await logger.warn(`Failed to launch browser with proxy ${launchOptions.proxy?.server || 'DIRECT'}: ${launchErr.message}. Retrying without proxy...`, 'SCANNER');
+
+                // Mark the specific proxy as DEAD if it was the cause
+                if (currentProxyId) {
+                    await (prisma as any).proxy.update({
+                        where: { id: currentProxyId },
+                        data: { status: 'DEAD', lastTestedAt: new Date() }
+                    }).catch(() => { });
+                }
+
+                // Fallback to direct connection
+                delete launchOptions.proxy;
+                browser = await chromium.launch(launchOptions);
+            }
+
+            // Derive regional persona
+            const { locale, timezoneId } = getRegionalSettings(scan.centerLat, scan.centerLng);
+
+            context = await browser.newContext({
+                viewport: { width: 1280, height: 800 },
+                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                locale,
+                timezoneId,
+                extraHTTPHeaders: {
+                    'Accept-Language': 'en-US,en;q=0.9'
+                }
+            });
+
+            await context.grantPermissions(['geolocation']);
+            page = await context.newPage();
+            await logger.info(`Browser context ready (${locale}/${timezoneId}).`, 'SCANNER', { proxy: launchOptions.proxy?.server || 'DIRECT' });
+        }
+
         await initBrowser();
 
         for (const point of points) {
-            // Check if scan has been stopped
-            const currentScan = await prisma.scan.findUnique({
+            // Check if scan has been stopped or reset
+            const currentScan = await (prisma as any).scan.findUnique({
                 where: { id: scanId },
                 select: { status: true }
             });
 
-            if (!currentScan || currentScan.status === 'STOPPED') {
-                console.log(`Scan ${scanId} was stopped.`);
+            // If status is PENDING, it means a NEW process (rerun) has reset this scan.
+            // We must exit the OLD process loop immediately to avoid data corruption.
+            if (!currentScan || currentScan.status === 'STOPPED' || currentScan.status === 'PENDING') {
+                await logger.info(`Scan ${scanId} was stopped or reset. Current status: ${currentScan?.status}. Exiting process ${currentScan ? 'cleanly' : 'due to deletion'}.`, 'SCANNER');
                 break;
             }
 
-            console.log(`Scraping point: ${point.lat}, ${point.lng}`);
             let results: any[] = [];
             let success = false;
             let attempts = 0;
@@ -93,18 +195,21 @@ export async function runScan(scanId: string) {
                     results = await scrapeGMB(page, scan.keyword, point.lat, point.lng);
                     success = true;
                 } catch (scrapeError: any) {
-                    console.error(`[Scanner] Attempt ${attempts} failed for point ${point.lat},${point.lng}: ${scrapeError.message}`);
+                    await logger.warn(`Attempt ${attempts} failed for point ${point.lat},${point.lng}: ${scrapeError.message}`, 'SCANNER');
                     if (attempts < maxAttempts) {
-                        console.log(`[Scanner] Retrying with new proxy rotation...`);
-                        await initBrowser();
+                        const isProxyError = scrapeError.message.includes('ERR_PROXY_CONNECTION_FAILED') ||
+                            scrapeError.message.includes('ERR_TUNNEL_CONNECTION_FAILED') ||
+                            scrapeError.message.includes('TIMEOUT');
+
+                        await initBrowser(isProxyError ? (currentProxyId || undefined) : undefined);
                     }
                 }
             }
 
             if (!success) {
-                console.error(`[Scanner] Failed to scrape point ${point.lat},${point.lng} after ${maxAttempts} attempts.`);
+                await logger.warn(`Point capture failed: ${point.lat}, ${point.lng} after max attempts.`, 'SCANNER');
                 // We create a result with empty data to allow the scan to continue but show the failure
-                await prisma.result.create({
+                await (prisma as any).result.create({
                     data: {
                         scanId: scan.id,
                         lat: point.lat,
@@ -127,7 +232,7 @@ export async function runScan(scanId: string) {
                 }
             }
 
-            await prisma.result.create({
+            await (prisma as any).result.create({
                 data: {
                     scanId: scan.id,
                     lat: point.lat,
@@ -137,6 +242,7 @@ export async function runScan(scanId: string) {
                     targetName
                 },
             });
+            await logger.debug(`Captured point ${point.lat},${point.lng}. Target Rank: ${rank || 'N/A'}`, 'SCANNER');
 
             // Random delay between points
             await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
@@ -164,9 +270,9 @@ export async function runScan(scanId: string) {
             });
 
             if (previousScan) {
-                const currentResults = await prisma.result.findMany({ where: { scanId } });
-                const currentAvg = currentResults.filter(r => r.rank !== null).reduce((acc, r) => acc + (r.rank || 21), 0) / (currentResults.filter(r => r.rank !== null).length || 1);
-                const previousAvg = previousScan.results.filter(r => r.rank !== null).reduce((acc, r) => acc + (r.rank || 21), 0) / (previousScan.results.filter(r => r.rank !== null).length || 1);
+                const currentResults = await (prisma as any).result.findMany({ where: { scanId } });
+                const currentAvg = currentResults.filter((r: any) => r.rank !== null).reduce((acc: any, r: any) => acc + (r.rank || 21), 0) / (currentResults.filter((r: any) => r.rank !== null).length || 1);
+                const previousAvg = previousScan.results.filter((r: any) => r.rank !== null).reduce((acc: any, r: any) => acc + (r.rank || 21), 0) / (previousScan.results.filter((r: any) => r.rank !== null).length || 1);
 
                 const diff = previousAvg - currentAvg;
                 if (Math.abs(diff) >= 0.5) {
@@ -189,21 +295,29 @@ export async function runScan(scanId: string) {
             },
         });
 
+        await logger.info(`Scan sequence completed successfully for "${scan.keyword}"`, 'SCANNER', { scanId });
     } catch (error) {
-        console.error(`[Scanner] Critical failure in scan ${scanId}:`, error);
-        await prisma.scan.update({
-            where: { id: scanId },
-            data: { status: 'FAILED' },
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        await logger.error(`Critical failure in scan: ${errorMsg}`, 'SCANNER', {
+            scanId,
+            stack: error instanceof Error ? error.stack : undefined
         });
 
-        await (prisma as any).alert.create({
-            data: {
-                type: 'SCAN_ERROR',
-                message: `Scan failed for "${scan.keyword}": ${error instanceof Error ? error.message : String(error)}`,
-                scanId: scanId
-            }
-        });
+        await (prisma as any).scan.update({
+            where: { id: scanId },
+            data: { status: 'FAILED' },
+        }).catch(() => { });
+
+        if (scan) {
+            await (prisma as any).alert.create({
+                data: {
+                    type: 'SCAN_ERROR',
+                    message: `Scan failed for "${scan.keyword}": ${errorMsg}`,
+                    scanId: scanId
+                }
+            }).catch(() => { });
+        }
     } finally {
-        if (browser) await browser.close();
+        if (browser) await browser.close().catch(() => { });
     }
 }

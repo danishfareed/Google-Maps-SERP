@@ -3,11 +3,12 @@ import { TrendingUp } from 'lucide-react';
 
 interface AIInsightsProps {
     avgRank: number;
-    scan: any; // Using any for simplicity in refactor, but should be typed properly
+    scan: any;
     totalPoints: number;
+    competitors: any[];
 }
 
-export function AIInsights({ avgRank, scan, totalPoints }: AIInsightsProps) {
+export function AIInsights({ avgRank, scan, totalPoints, competitors }: AIInsightsProps) {
     return (
         <div>
             <Card className="p-8 bg-white relative overflow-hidden border border-indigo-100 shadow-xl shadow-indigo-500/5">
@@ -16,8 +17,8 @@ export function AIInsights({ avgRank, scan, totalPoints }: AIInsightsProps) {
                         <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center shadow-sm text-indigo-600 mb-3 border border-indigo-100">
                             <TrendingUp size={24} />
                         </div>
-                        <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">Strategic Intelligence</h3>
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">AI Analysis v2.4</p>
+                        <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">Algorithmic Analysis</h3>
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Heuristic Performance Metrics</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 w-full">
@@ -53,10 +54,12 @@ export function AIInsights({ avgRank, scan, totalPoints }: AIInsightsProps) {
                         <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-indigo-200 transition-colors">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Strategic Targets</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Competitive Threat</span>
                             </div>
                             <p className="text-xs font-medium leading-relaxed text-gray-700">
-                                Priority targets identified. Focus acquisition efforts on high-ranking but low-review competitors to disrupt their local pack stability.
+                                {competitors && competitors.length > 0
+                                    ? `Main threat: '${competitors[0].name}' dominates ${((competitors[0].appearances / totalPoints) * 100).toFixed(0)}% of the grid. Analyze their citation profile for local pack displacement strategy.`
+                                    : "No major competitors detected within the Top 20 across the grid. You are virtually unchallenged in this keyword sector."}
                             </p>
                         </div>
                     </div>

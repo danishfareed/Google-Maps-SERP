@@ -215,13 +215,18 @@ __turbopack_context__.s([
 ]);
 async function scrapeGMB(page, keyword, lat, lng) {
     try {
-        console.log(`[Scraper] Starting scrape for: ${keyword} at ${lat}, ${lng}`);
-        // Navigate with a more realistic timeout and wait strategy
-        // Google Maps takes a long time to reach networkidle, so we use domcontentloaded
-        await page.goto(`https://www.google.com/maps/search/${encodeURIComponent(keyword)}/@${lat},${lng},14z/`, {
-            waitUntil: 'domcontentloaded',
-            timeout: 60000
-        });
+        console.log(`[Scraper] Navigating to: https://www.google.com/maps/search/${keyword}/@${lat},${lng},14z/`);
+        // Use a 30s timeout for the initial load, wait for domcontentloaded
+        // If this fails, it's likely a dead proxy or a block
+        try {
+            await page.goto(`https://www.google.com/maps/search/${encodeURIComponent(keyword)}/@${lat},${lng},14z/`, {
+                waitUntil: 'domcontentloaded',
+                timeout: 30000
+            });
+        } catch (gotoError) {
+            console.error(`[Scraper] Page goto failed: ${gotoError.message}`);
+            throw gotoError; // Rethrow to be caught by the scanner's retry logic
+        }
         // Wait for results to load - use multiple common selectors
         try {
             await page.waitForFunction(()=>{
@@ -296,7 +301,7 @@ async function scrapeGMB(page, keyword, lat, lng) {
         return results;
     } catch (error) {
         console.error(`[Scraper] Error scraping ${lat},${lng}:`, error);
-        return [];
+        throw error; // Re-throw to trigger scanner's retry/rotation logic
     }
 }
 }),
@@ -337,50 +342,85 @@ async function runScan(scanId) {
         }
     });
     const points = scan.customPoints ? JSON.parse(scan.customPoints) : (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$grid$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["generateGrid"])(scan.centerLat, scan.centerLng, scan.radius, scan.gridSize, scan.shape);
-    // Fetch enabled proxies and global settings
-    const [enabledProxies, proxySetting] = await Promise.all([
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.findMany({
-            where: {
-                enabled: true
-            }
-        }),
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].globalSetting.findUnique({
-            where: {
-                key: 'useSystemProxy'
-            }
-        })
-    ]);
-    const useSystemProxy = proxySetting ? proxySetting.value === 'true' : true;
-    const launchOptions = {
-        headless: true
-    };
-    // If not using system proxy and we have proxies in the pool
-    if (!useSystemProxy && enabledProxies.length > 0) {
-        // Simple random proxy selection for load balancing
-        const p = enabledProxies[Math.floor(Math.random() * enabledProxies.length)];
-        launchOptions.proxy = {
-            server: `${p.host}:${p.port}`,
-            username: p.username || undefined,
-            password: p.password || undefined
-        };
-        console.log(`[Scanner] Using proxy routing: ${p.host}:${p.port}`);
-    } else {
-        console.log(`[Scanner] Using Direct System Connection (no proxy)`);
-    }
-    const browser = await __TURBOPACK__imported__module__$5b$externals$5d2f$playwright__$5b$external$5d$__$28$playwright$2c$__esm_import$2c$__$5b$project$5d2f$node_modules$2f$playwright$29$__["chromium"].launch(launchOptions);
-    const context = await browser.newContext({
-        viewport: {
-            width: 1280,
-            height: 800
-        },
-        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    // Initial fetch of proxy settings
+    const proxySetting = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].globalSetting.findUnique({
+        where: {
+            key: 'useSystemProxy'
+        }
     });
-    // Grant geolocation permissions globally for the context
-    await context.grantPermissions([
-        'geolocation'
-    ]);
-    const page = await context.newPage();
+    const useSystemProxy = proxySetting ? proxySetting.value === 'true' : true;
+    let browser = null;
+    let context = null;
+    let page = null;
+    let currentProxyId = null;
+    async function initBrowser(failedProxyId) {
+        if (browser) await browser.close();
+        // If a proxy failed, mark it DEAD in the database immediately
+        if (failedProxyId) {
+            console.log(`[Scanner] Marking proxy ${failedProxyId} as DEAD due to connection failure.`);
+            try {
+                await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.update({
+                    where: {
+                        id: failedProxyId
+                    },
+                    data: {
+                        status: 'DEAD',
+                        lastTestedAt: new Date()
+                    }
+                });
+            } catch (err) {
+                console.error('[Scanner] Failed to update proxy status:', err);
+            }
+        }
+        const launchOptions = {
+            headless: true
+        };
+        if (!useSystemProxy) {
+            // Fetch healthy proxies (ACTIVE or UNTESTED)
+            const availableProxies = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.findMany({
+                where: {
+                    enabled: true,
+                    status: {
+                        in: [
+                            'ACTIVE',
+                            'UNTESTED'
+                        ]
+                    }
+                }
+            });
+            if (availableProxies.length > 0) {
+                // Prioritize ACTIVE proxies if available, otherwise use UNTESTED
+                const activeOnes = availableProxies.filter((p)=>p.status === 'ACTIVE');
+                const pool = activeOnes.length > 0 ? activeOnes : availableProxies;
+                const p = pool[Math.floor(Math.random() * pool.length)];
+                currentProxyId = p.id;
+                launchOptions.proxy = {
+                    server: `http://${p.host}:${p.port}`,
+                    username: p.username || undefined,
+                    password: p.password || undefined
+                };
+                console.log(`[Scanner] Initializing with ${p.status} proxy: ${p.host}:${p.port}`);
+            } else {
+                console.log(`[Scanner] No healthy proxies available. Falling back to direct connection.`);
+            }
+        } else {
+            console.log(`[Scanner] Initializing Direct System Connection`);
+        }
+        browser = await __TURBOPACK__imported__module__$5b$externals$5d2f$playwright__$5b$external$5d$__$28$playwright$2c$__esm_import$2c$__$5b$project$5d2f$node_modules$2f$playwright$29$__["chromium"].launch(launchOptions);
+        context = await browser.newContext({
+            viewport: {
+                width: 1280,
+                height: 800
+            },
+            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        });
+        await context.grantPermissions([
+            'geolocation'
+        ]);
+        page = await context.newPage();
+    }
     try {
+        await initBrowser();
         for (const point of points){
             // Check if scan has been stopped
             const currentScan = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].scan.findUnique({
@@ -396,12 +436,42 @@ async function runScan(scanId) {
                 break;
             }
             console.log(`Scraping point: ${point.lat}, ${point.lng}`);
-            // Set geolocation for THIS specific point
-            await context.setGeolocation({
-                latitude: point.lat,
-                longitude: point.lng
-            });
-            const results = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$scraper$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["scrapeGMB"])(page, scan.keyword, point.lat, point.lng);
+            let results = [];
+            let success = false;
+            let attempts = 0;
+            const maxAttempts = 3;
+            while(!success && attempts < maxAttempts){
+                attempts++;
+                try {
+                    await context.setGeolocation({
+                        latitude: point.lat,
+                        longitude: point.lng
+                    });
+                    results = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$scraper$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["scrapeGMB"])(page, scan.keyword, point.lat, point.lng);
+                    success = true;
+                } catch (scrapeError) {
+                    console.error(`[Scanner] Attempt ${attempts} failed for point ${point.lat},${point.lng}: ${scrapeError.message}`);
+                    if (attempts < maxAttempts) {
+                        const isProxyError = scrapeError.message.includes('ERR_PROXY_CONNECTION_FAILED') || scrapeError.message.includes('ERR_TUNNEL_CONNECTION_FAILED') || scrapeError.message.includes('TIMEOUT');
+                        console.log(`[Scanner] Retrying with new proxy rotation...`);
+                        await initBrowser(isProxyError ? currentProxyId || undefined : undefined);
+                    }
+                }
+            }
+            if (!success) {
+                console.error(`[Scanner] Failed to scrape point ${point.lat},${point.lng} after ${maxAttempts} attempts.`);
+                // We create a result with empty data to allow the scan to continue but show the failure
+                await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].result.create({
+                    data: {
+                        scanId: scan.id,
+                        lat: point.lat,
+                        lng: point.lng,
+                        topResults: JSON.stringify([]),
+                        rank: null
+                    }
+                });
+                continue;
+            }
             let rank = null;
             let targetName = null;
             if (scan.businessName) {
@@ -421,8 +491,8 @@ async function runScan(scanId) {
                     targetName
                 }
             });
-            // Delay between points to avoid detection (slightly reduced since we are reusing context)
-            await new Promise((resolve)=>setTimeout(resolve, 1500 + Math.random() * 2000));
+            // Random delay between points
+            await new Promise((resolve)=>setTimeout(resolve, 2000 + Math.random() * 3000));
         }
         // Calculate NEXT RUN if recurring
         let nextRun = null;
@@ -455,9 +525,9 @@ async function runScan(scanId) {
                         scanId
                     }
                 });
-                const currentAvg = currentResults.reduce((acc, r)=>acc + (r.rank || 21), 0) / currentResults.length;
-                const previousAvg = previousScan.results.reduce((acc, r)=>acc + (r.rank || 21), 0) / previousScan.results.length;
-                const diff = previousAvg - currentAvg; // Positive means improvement (rank decreased)
+                const currentAvg = currentResults.filter((r)=>r.rank !== null).reduce((acc, r)=>acc + (r.rank || 21), 0) / (currentResults.filter((r)=>r.rank !== null).length || 1);
+                const previousAvg = previousScan.results.filter((r)=>r.rank !== null).reduce((acc, r)=>acc + (r.rank || 21), 0) / (previousScan.results.filter((r)=>r.rank !== null).length || 1);
+                const diff = previousAvg - currentAvg;
                 if (Math.abs(diff) >= 0.5) {
                     await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].alert.create({
                         data: {
@@ -496,7 +566,7 @@ async function runScan(scanId) {
             }
         });
     } finally{
-        await browser.close();
+        if (browser) await browser.close();
     }
 }
 __turbopack_async_result__();

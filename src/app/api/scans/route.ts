@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { runScan } from '@/lib/scanner';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
     try {
@@ -29,10 +30,10 @@ export async function POST(req: Request) {
         } = await req.json();
 
         // Use provided coordinates or default to Chicago (Mock)
-        const centerLat = lat || 41.8781;
-        const centerLng = lng || -87.6298;
+        const centerLat = typeof lat === 'number' ? lat : 41.8781;
+        const centerLng = typeof lng === 'number' ? lng : -87.6298;
 
-        const scan = await prisma.scan.create({
+        const scan = await (prisma as any).scan.create({
             data: {
                 keyword,
                 centerLat,
@@ -48,7 +49,10 @@ export async function POST(req: Request) {
         });
 
         // Start scan in background
-        runScan(scan.id).catch(console.error);
+        logger.info(`New scan created: "${keyword}"`, 'API', { scanId: scan.id });
+        runScan(scan.id).catch(err => {
+            logger.error(`Background scan handler crashed for ${scan.id}: ${err.message}`, 'API', { scanId: scan.id, stack: err.stack });
+        });
 
         return NextResponse.json(scan);
     } catch (error) {

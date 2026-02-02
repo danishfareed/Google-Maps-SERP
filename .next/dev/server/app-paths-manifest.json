@@ -1,16 +1,22 @@
 {
   "/api/dashboard/route": "app/api/dashboard/route.js",
   "/api/geocode/route": "app/api/geocode/route.js",
+  "/api/logs/route": "app/api/logs/route.js",
   "/api/proxies/fetch/route": "app/api/proxies/fetch/route.js",
   "/api/proxies/route": "app/api/proxies/route.js",
+  "/api/scans/[id]/rerun/route": "app/api/scans/[id]/rerun/route.js",
   "/api/scans/[id]/route": "app/api/scans/[id]/route.js",
+  "/api/scans/lookup/route": "app/api/scans/lookup/route.js",
   "/api/scans/route": "app/api/scans/route.js",
   "/api/settings/route": "app/api/settings/route.js",
   "/api/system/lookback/route": "app/api/system/lookback/route.js",
+  "/help/page": "app/help/page.js",
+  "/logs/page": "app/logs/page.js",
   "/page": "app/page.js",
   "/reports/page": "app/reports/page.js",
   "/scans/[id]/page": "app/scans/[id]/page.js",
   "/scans/new/page": "app/scans/new/page.js",
   "/scans/page": "app/scans/page.js",
+  "/schedules/page": "app/schedules/page.js",
   "/settings/page": "app/settings/page.js"
 }

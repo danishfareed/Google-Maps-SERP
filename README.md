@@ -1,85 +1,81 @@
-# Google Maps SERP Tracker
+# 📍 GeoRanker - Local SEO Intelligence Grid
 
-A powerful, local-hosted tool for tracking Google Maps rankings using a grid-based system. This application mimics real user behavior to provide accurate, location-specific ranking data for local SEO optimization.
+**GeoRanker** is an enterprise-grade, local-hosted tool for tracking Google Maps (GMB) rankings using a hyper-local grid system. It mimics real user behavior to provide 100% accurate, location-specific ranking data for SEO professionals and business owners.
 
-![GMB Serp Tracker Dashboard](https://github.com/danishfareed/Google-Maps-SERP/assets/placeholder-image)
+![GeoRanker Dashboard](https://github.com/danishfareed/Google-Maps-SERP/blob/main/public/preview.png?raw=true)
 
-## 🌟 Features
+---
 
-*   **📍 Grid-Based Tracking**: Visualizes rankings on a map grid (e.g., 3x3, 5x5, 7x7) to show how your business ranks in different specific locations around your city.
-*   **🕵️ Real User Mimicry**: Uses advanced browser automation (Playwright) to "spoof" your location and behave like a real human searching on Google Maps. This ensures the data you see is exactly what a local customer sees.
-*   **🌍 Geolocation Spoofing**: Automatically sets the browser's GPS coordinates for each point on the grid to get hyper-local results.
-*   **📊 Interactive Dashboard**: A clean, modern interface to view your past scans, see average rankings, and track progress over time.
-*   **🏠 Local & Private**: All data is stored locally on your machine in a SQLite database. No monthly fees, no data leaks.
-*   **🚀 Fast & Modern**: Built with Next.js and Tailwind CSS for a snappy, responsive experience.
+## 🌟 Key Features
 
-## 🛠️ Prerequisites
+### 🎯 Precision Tracking
+- **Grid-Based Analysis**: Map out rankings (3x3 to 13x13) to see exactly where you dominate and where you disappear.
+- **Business Identity Integration**: Auto-populate your business details via search or import via Google Maps URL for pinpoint accuracy.
+- **Service Area & Location Support**: Optimized for both physical storefronts and service-area businesses (SABs).
 
-Before you start, make sure you have the following installed on your computer:
+### 🌍 Global Localization
+- **Coordinate-Aware Personas**: Automatically adapts browser locale and timezone (e.g., `en-AU` with `Australia/Sydney` timezone) based on the scan target.
+- **Forced English Extractions**: Uses `hl=en` globally to ensure consistent data processing regardless of the country being scanned.
 
-1.  **Node.js** (Version 18 or higher): [Download here](https://nodejs.org/)
-2.  **Git**: [Download here](https://git-scm.com/)
+### 🛡️ Enterprise Robustness
+- **Smart Proxy Management**: Auto-configure proxy pools with intelligent fail-overs.
+- **Blacklist Logic**: Faulty proxies are automatically marked as `DEAD` and the system falls back to direct connection to finish the scan.
+- **Detailed Telemetry**: Real-time system logs and diagnostic console in Settings for full transparency.
 
-## 🚀 Installation & Setup
+### 📊 Advanced Al-Insights
+- **Threat Identification**: Automatically identifies the primary competitor stealing your market share.
+- **Geo-Health Analysis**: Detailed reporting on ranking stability and geographic gaps.
 
-1.  **Clone the Repository** (or download the code):
-    ```bash
-    git clone https://github.com/danishfareed/Google-Maps-SERP.git
-    cd Google-Maps-SERP
-    ```
+---
 
-2.  **Install Dependencies**:
-    Open your terminal (Command Prompt/Terminal) in the project folder and run:
-    ```bash
-    npm install
-    ```
+## 🚀 One-Command Installation
 
-3.  **Install Browser Engines**:
-    This step installs the browsers needed for the automation to work.
-    ```bash
-    npx playwright install
-    ```
+The easiest way to set up or update GeoRanker is using our installer:
 
-4.  **Initialize Database**:
-    Set up the local database to store your scan results.
-    ```bash
-    npx prisma generate
-    npx prisma migrate dev --name init
-    ```
+```bash
+# Clone and Setup
+git clone https://github.com/danishfareed/Google-Maps-SERP.git
+cd Google-Maps-SERP
+bash install.sh
+```
 
-## 📖 How to Use
+### Manual Prerequisites
+*   **Node.js v18+**
+*   **Git**
 
-1.  **Start the Application**:
-    Run the following command in your terminal:
+---
+
+## 📖 Getting Started
+
+1.  **Launch the App**:
     ```bash
     npm run dev
     ```
-    Once started, open your web browser and go to: `http://localhost:3000`
+2.  **Access the Dashboard**: Open `http://localhost:3000`
+3.  **Run Your First Scan**:
+    - Select **New Ranking Report**.
+    - Switch to **My Business** mode.
+    - Paste your Google Maps URL or search for your name.
+    - Configure your grid and click **Run Scan**.
 
-2.  **Create a New Scan**:
-    *   Click on **"New Scan"** or the **"+"** button on the dashboard.
-    *   **Target Keyword**: Enter the search term you want to track (e.g., "coffee shop", "plumber near me").
-    *   **Center Location**: Enter the central address or city you want to scan around (e.g., "Chicago, IL").
-    *   **Radius**: Choose how far out you want to scan (e.g., 5 km).
-    *   **Grid Size**: Select the density of the grid (e.g., 3x3 for a quick scan, 7x7 for detailed coverage).
-    *   Click **"Start Grid Scan"**.
+---
 
-3.  **View Results**:
-    *   The app will start processing each point on the grid.
-    *   As it finishes, you'll see the results populate in real-time.
-    *   Click on any completed scan in the dashboard to view the full grid map and ranking details.
+## 🛠️ Diagnostics & Logs
+If you encounter issues with proxies or scan failures, visit **Settings > Telemetry** to view real-time logs and debug information.
 
-## ❓ FAQ
+---
 
-**Q: Why does it take time to complete a scan?**
-A: To mimic a real user and avoid getting blocked by Google, the tool intentionally adds small delays between searches and interacts with the page (scrolling, etc.). This ensures the data is accurate and safe to collect.
+## 🏠 Private & Local
+GeoRanker runs entirely on your machine. All scan data, proxy settings, and logs are stored in a local SQLite database (`dev.db`). No external APIs see your keywords or rankings except for the direct extraction from Google Maps.
 
-**Q: Where is my data stored?**
-A: Everything is stored in a file named `dev.db` inside the project folder. You own your data completely.
-
-**Q: Can I run this on a server?**
-A: Yes, but it requires a graphical environment or configuring Playwright to run in "headless" mode (which is the default) with proper proxy support if running many scans.
+---
 
 ## 🤝 Contributing
+Contributions are what make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+---
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+**Author:** [Danish Fareed](https://github.com/danishfareed)

@@ -1,4 +1,5 @@
-import { chromium, BrowserContext, Page } from 'playwright';
+import { BrowserContext, Page } from 'playwright';
+import { logger } from './logger';
 
 export interface ScrapeResult {
     name: string;
@@ -11,12 +12,12 @@ export interface ScrapeResult {
 
 export async function scrapeGMB(page: Page, keyword: string, lat: number, lng: number): Promise<ScrapeResult[]> {
     try {
-        console.log(`[Scraper] Navigating to: https://www.google.com/maps/search/${keyword}/@${lat},${lng},14z/`);
+        await logger.debug(`[Scraper] Navigating to Google Maps for "${keyword}" at ${lat},${lng}`, 'SCANNER');
 
         // Use a 30s timeout for the initial load, wait for domcontentloaded
         // If this fails, it's likely a dead proxy or a block
         try {
-            await page.goto(`https://www.google.com/maps/search/${encodeURIComponent(keyword)}/@${lat},${lng},14z/`, {
+            await page.goto(`https://www.google.com/maps/search/${encodeURIComponent(keyword)}/@${lat},${lng},14z/?hl=en`, {
                 waitUntil: 'domcontentloaded',
                 timeout: 30000,
             });
@@ -112,11 +113,11 @@ export async function scrapeGMB(page: Page, keyword: string, lat: number, lng: n
             return extracted;
         });
 
-        console.log(`[Scraper] Successfully extracted ${results.length} results.`);
+        await logger.debug(`[Scraper] Extracted ${results.length} entities.`, 'SCANNER');
         return results;
 
     } catch (error) {
         console.error(`[Scraper] Error scraping ${lat},${lng}:`, error);
-        return [];
+        throw error; // Re-throw to trigger scanner's retry/rotation logic
     }
 }

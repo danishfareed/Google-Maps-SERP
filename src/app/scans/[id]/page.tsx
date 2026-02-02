@@ -136,20 +136,86 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
         }
     };
 
+    // --- Competitor Analysis Logic ---
+    const competitorsList = (() => {
+        const competitorsMap = new Map<string, {
+            name: string,
+            avgRank: number,
+            appearances: number,
+            top3: number,
+            top10: number,
+            url?: string
+        }>();
+
+        scan.results.forEach(r => {
+            const results = getTopResults(r.topResults);
+            results.forEach(biz => {
+                const entry = competitorsMap.get(biz.name) || {
+                    name: biz.name,
+                    avgRank: 0,
+                    appearances: 0,
+                    top3: 0,
+                    top10: 0,
+                    url: biz.url
+                };
+                entry.appearances += 1;
+                entry.avgRank += biz.rank;
+                if (biz.rank <= 3) entry.top3 += 1;
+                if (biz.rank <= 10) entry.top10 += 1;
+                competitorsMap.set(biz.name, entry);
+            });
+        });
+
+        return Array.from(competitorsMap.values())
+            .map(c => ({ ...c, avgRank: c.avgRank / c.appearances }))
+            .filter(c => c.name.toLowerCase() !== scan.businessName?.toLowerCase())
+            .sort((a, b) => b.appearances - a.appearances || a.avgRank - b.avgRank);
+    })();
+
+    const top3Competitors = competitorsList.slice(0, 3);
+    // --------------------------------
+
     const handleStop = async () => {
         if (!confirm('Stop this scan? Results collected so far will be saved.')) return;
         try {
-            const res = await fetch(`/api/scans/${scan.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'STOPPED' })
+            setLoading(true);
+            const res = await fetch(`/api/scans/${scan!.id}/stop`, {
+                method: 'POST'
             });
+            const data = await res.json();
+
             if (res.ok) {
-                setScan(prev => prev ? { ...prev, status: 'STOPPED' } : null);
+                setScan(data.scan);
+            } else {
+                throw new Error(data.details || data.error || 'Failed to stop');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Stop failed:', error);
-            alert('Failed to stop scan');
+            alert(`Stop Failed: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRerun = async () => {
+        if (!confirm('Clear all results and rerun this scan from scratch?')) return;
+        try {
+            setLoading(true);
+            const res = await fetch(`/api/scans/${scan.id}/rerun`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                setScan(data.scan);
+            } else {
+                throw new Error(data.details || data.error || 'Failed to rerun');
+            }
+        } catch (error: any) {
+            console.error('Rerun failed:', error);
+            alert(`Rerun Failed: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -204,6 +270,7 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
             <ScanHeader
                 scan={scan}
                 onStop={handleStop}
+                onRerun={handleRerun}
                 onDelete={handleDelete}
                 onExportXLSX={handleExportXLSX}
                 onExportPDF={handleExportPDF}
@@ -222,65 +289,29 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                     </Button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {(() => {
-                        const competitorsMap = new Map<string, {
-                            name: string,
-                            avgRank: number,
-                            appearances: number,
-                            top3: number,
-                            top10: number,
-                            url?: string
-                        }>();
-
-                        scan.results.forEach(r => {
-                            const results = getTopResults(r.topResults);
-                            results.forEach(biz => {
-                                const entry = competitorsMap.get(biz.name) || {
-                                    name: biz.name,
-                                    avgRank: 0,
-                                    appearances: 0,
-                                    top3: 0,
-                                    top10: 0,
-                                    url: biz.url
-                                };
-                                entry.appearances += 1;
-                                entry.avgRank += biz.rank;
-                                if (biz.rank <= 3) entry.top3 += 1;
-                                if (biz.rank <= 10) entry.top10 += 1;
-                                competitorsMap.set(biz.name, entry);
-                            });
-                        });
-
-                        const sorted = Array.from(competitorsMap.values())
-                            .map(c => ({ ...c, avgRank: c.avgRank / c.appearances }))
-                            .filter(c => c.name.toLowerCase() !== scan.businessName?.toLowerCase())
-                            .sort((a, b) => b.appearances - a.appearances || a.avgRank - b.avgRank)
-                            .slice(0, 3);
-
-                        return sorted.map((comp, idx) => (
-                            <Card key={idx} className="p-4 border-l-4 border-l-blue-500 hover:shadow-lg transition-all">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div className="bg-blue-50 text-blue-600 font-black text-[10px] px-2 py-1 rounded uppercase">Rank #{idx + 1} Share</div>
-                                    <span className="text-[10px] text-gray-400 font-mono">Found in {comp.appearances} points</span>
+                    {top3Competitors.map((comp, idx) => (
+                        <Card key={idx} className="p-4 border-l-4 border-l-blue-500 hover:shadow-lg transition-all">
+                            <div className="flex justify-between items-start mb-3">
+                                <div className="bg-blue-50 text-blue-600 font-black text-[10px] px-2 py-1 rounded uppercase">Rank #{idx + 1} Share</div>
+                                <span className="text-[10px] text-gray-400 font-mono">Found in {comp.appearances} points</span>
+                            </div>
+                            <h4 className="font-bold text-gray-900 truncate mb-2">{comp.name}</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="bg-gray-50 p-2 rounded-lg">
+                                    <p className="text-[9px] text-gray-400 uppercase font-bold">Avg Rank</p>
+                                    <p className="text-sm font-black text-gray-900">#{comp.avgRank.toFixed(1)}</p>
                                 </div>
-                                <h4 className="font-bold text-gray-900 truncate mb-2">{comp.name}</h4>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="bg-gray-50 p-2 rounded-lg">
-                                        <p className="text-[9px] text-gray-400 uppercase font-bold">Avg Rank</p>
-                                        <p className="text-sm font-black text-gray-900">#{comp.avgRank.toFixed(1)}</p>
-                                    </div>
-                                    <div className="bg-gray-50 p-2 rounded-lg">
-                                        <p className="text-[9px] text-gray-400 uppercase font-bold">Top 3 Hits</p>
-                                        <p className="text-sm font-black text-emerald-600">{comp.top3}</p>
-                                    </div>
+                                <div className="bg-gray-50 p-2 rounded-lg">
+                                    <p className="text-[9px] text-gray-400 uppercase font-bold">Top 3 Hits</p>
+                                    <p className="text-sm font-black text-emerald-600">{comp.top3}</p>
                                 </div>
-                            </Card>
-                        ));
-                    })()}
+                            </div>
+                        </Card>
+                    ))}
                 </div>
             </div>
 
-            <AIInsights avgRank={avgRank} scan={scan} totalPoints={totalPoints} />
+            <AIInsights avgRank={avgRank} scan={scan} totalPoints={totalPoints} competitors={competitorsList} />
 
             {/* Main Content Area */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

@@ -1,0 +1,24 @@
+[
+    {
+        "version": "1.2.0",
+        "date": "2026-02-02",
+        "title": "Global Precision Update",
+        "changes": [
+            "Precision Business Identity: Auto-populate and URL-based imports.",
+            "Regional Localization: Dynamic locale/timezone adaptation per scan.",
+            "Fail-Safe Scans: Automatic proxy blacklisting and direct fallback.",
+            "Enhanced Al-Insights: Primary threat identification and market share analysis.",
+            "Telemetry Console: Integrated system logs in Settings."
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "date": "2026-01-30",
+        "title": "Stability Patch",
+        "changes": [
+            "Fixed coordinate validation for equator/prime meridian points.",
+            "Improved scraper scrolling performance.",
+            "Added system-wide logging utility."
+        ]
+    }
+]

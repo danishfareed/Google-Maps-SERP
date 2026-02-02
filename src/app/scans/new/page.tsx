@@ -60,6 +60,82 @@ export default function NewScanPage() {
         shape: 'SQUARE' as 'SQUARE' | 'CIRCLE' | 'ZIP' | 'SMART',
     });
     const [customPoints, setCustomPoints] = useState<any[] | null>(null);
+    const [lookupResults, setLookupResults] = useState<any[]>([]);
+    const [lookingUp, setLookingUp] = useState(false);
+    const [lookupUrl, setLookupUrl] = useState('');
+    const [isUrlImport, setIsUrlImport] = useState(false);
+
+    // Debounced search for business names
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (formData.businessName && formData.businessName.length > 3 && !isUrlImport) {
+                handleLookup(formData.businessName);
+            }
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [formData.businessName, isUrlImport]);
+
+    const handleLookup = async (q: string) => {
+        if (q.length < 3) return;
+        setLookingUp(true);
+        try {
+            const res = await fetch('/api/scans/lookup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: q })
+            });
+            const data = await res.json();
+            setLookupResults(data.results || []);
+        } catch (err) {
+            console.error('Lookup failed:', err);
+        } finally {
+            setLookingUp(false);
+        }
+    };
+
+    const handleUrlImport = async () => {
+        if (!lookupUrl) return;
+        setLookingUp(true);
+        try {
+            const res = await fetch('/api/scans/lookup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: lookupUrl })
+            });
+            const data = await res.json();
+            if (data.business) {
+                setFormData(prev => ({
+                    ...prev,
+                    businessName: data.business.name,
+                    address: data.business.address,
+                    centerLat: data.business.lat || prev.centerLat,
+                    centerLng: data.business.lng || prev.centerLng
+                }));
+                setLookupUrl('');
+                setIsUrlImport(false);
+            }
+        } catch (err) {
+            console.error('URL import failed:', err);
+            alert('Failed to import business from URL');
+        } finally {
+            setLookingUp(false);
+        }
+    };
+
+    const selectBusiness = (biz: any) => {
+        setFormData(prev => ({
+            ...prev,
+            businessName: biz.name,
+            address: biz.address || prev.address
+        }));
+        setLookupResults([]);
+
+        // If the result has a URL, we can do a deep lookup to get coordinates
+        if (biz.url) {
+            setLookupUrl(biz.url);
+            handleUrlImport();
+        }
+    };
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -201,15 +277,65 @@ export default function NewScanPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">
                                         {scanMode === 'BUSINESS' && (
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">My Business Name</label>
-                                                <Input
-                                                    placeholder="e.g. Starbucks"
-                                                    icon={<Store size={16} />}
-                                                    value={formData.businessName}
-                                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                                />
-                                                <p className="text-[10px] text-gray-400 mt-1">We will track where this specific business ranks in the grid.</p>
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-end">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">My Business Name</label>
+                                                    <button
+                                                        onClick={() => setIsUrlImport(!isUrlImport)}
+                                                        className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline"
+                                                    >
+                                                        {isUrlImport ? 'Search by Name' : 'Import from URL'}
+                                                    </button>
+                                                </div>
+
+                                                {isUrlImport ? (
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            placeholder="Paste Google Maps URL..."
+                                                            icon={<Navigation size={16} />}
+                                                            value={lookupUrl}
+                                                            onChange={(e) => setLookupUrl(e.target.value)}
+                                                            className="flex-1"
+                                                        />
+                                                        <Button onClick={handleUrlImport} isLoading={lookingUp} variant="secondary">
+                                                            Import
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="relative">
+                                                        <Input
+                                                            placeholder="e.g. Starbucks"
+                                                            icon={<Store size={16} />}
+                                                            value={formData.businessName}
+                                                            onChange={(e) => {
+                                                                setFormData({ ...formData, businessName: e.target.value });
+                                                            }}
+                                                        />
+                                                        {lookingUp && (
+                                                            <div className="absolute right-3 top-2.5">
+                                                                <Loader2 size={16} className="animate-spin text-blue-500" />
+                                                            </div>
+                                                        )}
+
+                                                        {lookupResults.length > 0 && (
+                                                            <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+                                                                {lookupResults.map((biz, i) => (
+                                                                    <div
+                                                                        key={i}
+                                                                        className="p-3 hover:bg-blue-50 cursor-pointer border-b last:border-0"
+                                                                        onClick={() => selectBusiness(biz)}
+                                                                    >
+                                                                        <p className="text-xs font-bold text-gray-900">{biz.name}</p>
+                                                                        <p className="text-[10px] text-gray-500 truncate">{biz.address}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <p className="text-[10px] text-gray-400 mt-1">
+                                                    {isUrlImport ? 'Exact match via Google Maps link.' : 'We will track where this specific business ranks in the grid.'}
+                                                </p>
                                             </div>
                                         )}
                                         <div>
@@ -266,7 +392,7 @@ export default function NewScanPage() {
                                                     <div className="flex flex-col h-full">
                                                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
                                                             <div>
-                                                                <h3 className="font-bold text-gray-900">Precision Location Editor</h3>
+                                                                <DialogTitle className="font-bold text-gray-900">Precision Location Editor</DialogTitle>
                                                                 <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Set Grid Center Point</p>
                                                             </div>
                                                         </div>
@@ -365,7 +491,7 @@ export default function NewScanPage() {
                                                     <div className="flex flex-col h-full">
                                                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
                                                             <div>
-                                                                <h3 className="font-bold text-gray-900">Spatial Geometry Editor</h3>
+                                                                <DialogTitle className="font-bold text-gray-900">Spatial Geometry Editor</DialogTitle>
                                                                 <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Adjust Individual Pins or Move Whole Grid</p>
                                                             </div>
                                                         </div>

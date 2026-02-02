@@ -1,17 +1,18 @@
 import { Badge, Button } from '@/components/ui';
-import { Download, Share2, StopCircle, Trash2, MapPin, Calendar, ChevronLeft } from 'lucide-react';
+import { Download, Share2, StopCircle, Trash2, MapPin, Calendar, ChevronLeft, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 interface ScanHeaderProps {
     scan: any;
     onStop: () => void;
+    onRerun: () => void;
     onDelete: () => void;
     onExportXLSX: () => void;
     onExportPDF: () => void;
     onShare: () => void;
 }
 
-export function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, onShare }: ScanHeaderProps) {
+export function ScanHeader({ scan, onStop, onRerun, onDelete, onExportXLSX, onExportPDF, onShare }: ScanHeaderProps) {
     return (
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -37,6 +38,9 @@ export function ScanHeader({ scan, onStop, onDelete, onExportXLSX, onExportPDF, 
                 </div>
             </div>
             <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={onRerun} className="bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100 font-bold">
+                    <RefreshCw size={14} className="mr-2" /> Rerun
+                </Button>
                 {(scan.status === 'RUNNING' || scan.status === 'PENDING') && (
                     <Button variant="destructive" size="sm" onClick={onStop}>
                         <StopCircle size={14} className="mr-2" /> Stop Scan

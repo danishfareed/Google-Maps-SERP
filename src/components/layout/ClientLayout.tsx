@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { PageTransition } from './PageTransition';
+import { UpdateNotifier } from './UpdateNotifier';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
     const [collapsed, setCollapsed] = useState(true);
@@ -38,6 +39,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     {children}
                 </PageTransition>
             </main>
+            <UpdateNotifier />
         </div>
     );
 }

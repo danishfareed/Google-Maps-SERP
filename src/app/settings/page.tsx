@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Settings as SettingsIcon, User, Bell, Database, Github, Plus, Trash2, CheckCircle2, Globe, Server, Shield, Zap, Info, Loader2, X, AlertCircle, Activity } from 'lucide-react';
 import { Card, Button, Input, Select, Badge } from '@/components/ui';
+import { Telemetry } from '@/components/settings/Telemetry';
 
 export default function SettingsPage() {
     const [name, setName] = useState('Local User');
@@ -13,10 +14,11 @@ export default function SettingsPage() {
     const [showLogs, setShowLogs] = useState(false);
     const [newProxy, setNewProxy] = useState({ host: '', port: '', username: '', password: '', type: 'RESIDENTIAL' });
     const [showAddProxy, setShowAddProxy] = useState(false);
-    const [activeSection, setActiveSection] = useState<'general' | 'proxies' | 'providers' | 'notifications'>('general');
+    const [activeSection, setActiveSection] = useState<'general' | 'proxies' | 'providers' | 'notifications' | 'logs'>('general');
     const [useSystemProxy, setUseSystemProxy] = useState(true);
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
     const [checkingNotifications, setCheckingNotifications] = useState(false);
+    const [isValidating, setIsValidating] = useState(false);
 
     useEffect(() => {
         const savedName = localStorage.getItem('gmbserp_user_name');
@@ -147,6 +149,27 @@ export default function SettingsPage() {
         }
     };
 
+    const handleValidateProxies = async () => {
+        setIsValidating(true);
+        try {
+            const res = await fetch('/api/proxies', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'VALIDATE_ALL' }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setFetchLogs(prev => [...prev, `[HEALTH] Validation complete: ${data.active} Active, ${data.dead} Dead.`]);
+                setShowLogs(true);
+                fetchProxies();
+            }
+        } catch (err) {
+            console.error('Validation failed:', err);
+        } finally {
+            setIsValidating(false);
+        }
+    };
+
     const handlePurgePool = async () => {
         if (!confirm('Are you sure you want to purge the entire routing pool? This cannot be undone.')) return;
         try {
@@ -196,14 +219,14 @@ export default function SettingsPage() {
                     </div>
                     <p className="text-xs text-gray-500 font-bold ml-1 uppercase tracking-widest opacity-70">Infrastructure & Spatial Routing Control</p>
                 </div>
-                <div className="flex gap-2 p-1.5 bg-white rounded-xl border border-gray-200 shadow-sm">
-                    {['general', 'proxies', 'providers', 'notifications'].map((tab) => (
+                <div className="flex gap-2 p-1.5 bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto custom-scrollbar">
+                    {['general', 'proxies', 'providers', 'notifications', 'logs'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveSection(tab as any)}
-                            className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${activeSection === tab ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'}`}
+                            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all flex-shrink-0 ${activeSection === tab ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'}`}
                         >
-                            {tab}
+                            {tab === 'logs' ? 'Telemetry' : tab}
                         </button>
                     ))}
                 </div>
@@ -291,6 +314,14 @@ export default function SettingsPage() {
                                     >
                                         {loadingProxies ? <Loader2 size={16} className="animate-spin mr-2" /> : <Github size={16} className="mr-2" />}
                                         Auto-Configure Pool
+                                    </Button>
+                                    <Button
+                                        onClick={handleValidateProxies}
+                                        disabled={isValidating || proxies.length === 0}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-black uppercase text-[10px] tracking-widest h-11"
+                                    >
+                                        {isValidating ? <Loader2 size={16} className="animate-spin mr-2" /> : <Activity size={16} className="mr-2" />}
+                                        Validate Health
                                     </Button>
                                     <Button onClick={() => setShowAddProxy(!showAddProxy)} variant="outline" className="border-gray-200 font-black uppercase text-[10px] tracking-widest h-11 bg-white">
                                         Manual Entry
@@ -428,10 +459,15 @@ export default function SettingsPage() {
                                                 proxies.map(p => (
                                                     <tr key={p.id} className="hover:bg-gray-50/50 group transition-all">
                                                         <td className="px-6 py-4">
-                                                            <button
-                                                                onClick={() => handleToggleProxy(p.id, p.enabled)}
-                                                                className={`w-2.5 h-2.5 rounded-full transition-all ${p.enabled ? 'bg-emerald-500 shadow-sm shadow-emerald-500/30' : 'bg-gray-300'}`}
-                                                            />
+                                                            <div className="flex items-center gap-2">
+                                                                <button
+                                                                    onClick={() => handleToggleProxy(p.id, p.enabled)}
+                                                                    className={`w-2.5 h-2.5 rounded-full transition-all ${p.enabled ? 'bg-emerald-500 shadow-sm shadow-emerald-500/30' : 'bg-gray-300'}`}
+                                                                />
+                                                                <span className={`text-[9px] font-black uppercase tracking-tight ${p.status === 'DEAD' ? 'text-rose-500' : p.status === 'ACTIVE' ? 'text-emerald-500' : 'text-gray-400'}`}>
+                                                                    {p.status || 'UNTESTED'}
+                                                                </span>
+                                                            </div>
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <div className="font-mono font-bold text-gray-700 text-xs">{p.host}:{p.port}</div>
@@ -539,6 +575,9 @@ export default function SettingsPage() {
                             ))}
                         </div>
                     </Card>
+                )}
+                {activeSection === 'logs' && (
+                    <Telemetry />
                 )}
             </main>
 

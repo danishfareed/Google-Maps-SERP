@@ -62,6 +62,8 @@ __turbopack_context__.s([
     ()=>DELETE,
     "GET",
     ()=>GET,
+    "PATCH",
+    ()=>PATCH,
     "POST",
     ()=>POST,
     "PUT",
@@ -192,6 +194,52 @@ async function DELETE(req) {
         console.error('Proxy delete error:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: 'Failed to delete proxy'
+        }, {
+            status: 500
+        });
+    }
+}
+async function PATCH(req) {
+    try {
+        const { action } = await req.json();
+        const { validateProxyBatch } = await __turbopack_context__.A("[project]/src/lib/proxy-tester.ts [app-route] (ecmascript, async loader)");
+        if (action === 'VALIDATE_ALL') {
+            const proxies = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.findMany({
+                where: {
+                    enabled: true
+                }
+            });
+            console.log(`[ProxyAPI] Validating ${proxies.length} proxies...`);
+            // Limit to top 100 for safety in single request
+            const poolToTest = proxies.slice(0, 100);
+            const results = await validateProxyBatch(poolToTest, 20);
+            for (const res of results){
+                await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].proxy.update({
+                    where: {
+                        id: res.id
+                    },
+                    data: {
+                        status: res.success ? 'ACTIVE' : 'DEAD',
+                        lastTestedAt: new Date()
+                    }
+                });
+            }
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                success: true,
+                tested: results.length,
+                active: results.filter((r)=>r.success).length,
+                dead: results.filter((r)=>!r.success).length
+            });
+        }
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: 'Invalid action'
+        }, {
+            status: 400
+        });
+    } catch (error) {
+        console.error('Proxy PATCH error:', error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: error.message
         }, {
             status: 500
         });
