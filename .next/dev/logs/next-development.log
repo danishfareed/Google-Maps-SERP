@@ -20204,3 +20204,5 @@ Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
 [83:51:28.297] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /scans/[id]. Please move it to viewport export instead.
 Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
 [83:51:28.298] Server  LOG     ✓ Compiled in 125ms
+[84:03:15.501] Server  LOG     ✓ Compiled in 39ms
+[84:03:24.544] Server  LOG     ✓ Compiled in 18ms

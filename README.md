@@ -41,20 +41,41 @@
 
 ---
 
-## 🚀 One-Command Installation
+## 🚀 One-Click Installation
 
-The easiest way to set up or update GeoRanker is using our installer:
+### macOS
 
 ```bash
-# Clone and Setup
+# Clone the repository
 git clone https://github.com/danishfareed/Google-Maps-SERP.git
 cd Google-Maps-SERP
-bash install.sh
+
+# Run the installer
+./install_mac.sh
 ```
 
-### Manual Prerequisites
-*   **Node.js v18+**
-*   **Git**
+### Windows
+
+```powershell
+# Clone the repository
+git clone https://github.com/danishfareed/Google-Maps-SERP.git
+cd Google-Maps-SERP
+
+# Run the installer (double-click or run in terminal)
+install_windows.bat
+```
+
+### After Installation
+
+To start GeoRanker after installation:
+- **macOS**: Run `./start.sh`
+- **Windows**: Double-click `start.bat`
+
+Then open **http://localhost:3000** in your browser.
+
+### Prerequisites
+- **Node.js v18+** - Download from [nodejs.org](https://nodejs.org/)
+- **Git** - Download from [git-scm.com](https://git-scm.com/)
 
 ---
 

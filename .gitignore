@@ -34,3 +34,4 @@ node_modules
 
 # Turbo
 .turbo
+pleper_chrome_extension/

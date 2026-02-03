@@ -501,8 +501,10 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                                                                     <Badge variant={r.rank <= 3 ? 'success' : r.rank <= 10 ? 'warning' : 'destructive'} className="h-5 font-black text-[10px]">
                                                                         #{r.rank}
                                                                     </Badge>
+                                                                ) : scan.businessName ? (
+                                                                    <Badge variant="destructive" className="h-5 text-[10px] font-bold">Not Found</Badge>
                                                                 ) : (
-                                                                    <Badge variant="outline" className="h-5 text-[10px] font-bold">MISSING</Badge>
+                                                                    <Badge variant="outline" className="h-5 text-[10px] font-bold text-gray-400">Quick Scan</Badge>
                                                                 )}
                                                             </div>
                                                             <div className="flex flex-col">
