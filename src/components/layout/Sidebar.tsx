@@ -14,12 +14,14 @@ import {
     ChevronRight,
     PanelLeftClose,
     HelpCircle,
-    Activity
+    Activity,
+    Wrench
 } from 'lucide-react';
 
 const navItems = [
     { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/scans', icon: MapPin, label: 'Rank Tracker' },
+    { href: '/tools', icon: Wrench, label: 'Power Tools' },
     { href: '/schedules', icon: Calendar, label: 'Schedules', disabled: false },
     { href: '/reports', icon: BarChart3, label: 'Reports', disabled: false },
     { href: '/settings', icon: Settings, label: 'Settings' },

@@ -22,18 +22,24 @@ model Scan {
   nextRun     DateTime?
   businessName String?     // Name of business to track ranking for (optional)
   results     Result[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([nextRun])
 }
 
 model Result {
   id           String   @id @default(cuid())
   scanId       String
-  scan         Scan     @relation(fields: [scanId], references: [id])
+  scan         Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
   lat          Float
   lng          Float
   rank         Int?     // Rank of the target business (null if not found)
   targetName   String?  // Target business name to track
   topResults   String   // List of top 20 businesses found at this point (JSON string)
   capturedAt   DateTime @default(now())
+
+  @@index([scanId])
 }
 
 model Proxy {
@@ -58,6 +64,9 @@ model Alert {
   scanId    String
   createdAt DateTime @default(now())
   read      Boolean  @default(false)
+
+  @@index([read])
+  @@index([scanId])
 }
 
 model GlobalSetting {

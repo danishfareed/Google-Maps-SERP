@@ -95,31 +95,33 @@ export default function DashboardPage() {
                     </div>
                 </Card>
 
-                <Card noPadding className="h-full bg-slate-900 text-white border-none shadow-lg shadow-slate-200 overflow-hidden relative group md:col-span-2">
+                <Card noPadding className="h-full bg-gradient-to-br from-slate-900 to-slate-800 text-white border-none shadow-xl shadow-slate-200/50 overflow-hidden relative group md:col-span-2 ring-1 ring-white/10">
                     <div className="h-full p-6 flex flex-col justify-between relative z-10">
                         <div className="flex items-start justify-between">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <div className="p-1 bg-blue-500/20 rounded-md">
-                                        <Zap size={14} className="text-blue-400 fill-blue-400" />
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-blue-500/20 rounded-lg backdrop-blur-sm border border-blue-500/20">
+                                        <Zap size={14} className="text-blue-300 fill-blue-300" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Pro Tip</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-300">Pro Tip</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-white tracking-tight">Category Optimization</h3>
-                                <p className="text-slate-300 text-sm leading-relaxed max-w-[280px]">
-                                    Increase visibility by refining your <strong className="text-white">GMB categories</strong> to match high-volume intent.
-                                </p>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white tracking-tight mb-2">Category Optimization</h3>
+                                    <p className="text-blue-100/90 text-sm leading-relaxed max-w-[320px] font-medium">
+                                        Increase visibility by refining your <strong className="text-white font-black">GMB categories</strong> to match high-volume intent.
+                                    </p>
+                                </div>
                             </div>
-                            <div className="bg-white/5 p-2 rounded-lg backdrop-blur-md group-hover:scale-110 transition-transform">
-                                <List className="text-slate-400" size={20} />
+                            <div className="bg-white/10 p-2.5 rounded-xl backdrop-blur-md group-hover:scale-110 transition-transform border border-white/10">
+                                <List className="text-blue-200" size={20} />
                             </div>
                         </div>
-                        <Link href="/help" className="text-sm font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 mt-4 transition-colors">
-                            Read Strategy Guide <ArrowRight size={14} />
+                        <Link href="/help" className="text-sm font-bold text-blue-300 hover:text-white flex items-center gap-2 mt-4 transition-colors group/link">
+                            Read Strategy Guide <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
                         </Link>
                     </div>
-                    <div className="absolute -right-8 -bottom-8 opacity-5 pointer-events-none group-hover:scale-125 transition-transform duration-700">
-                        <Activity size={160} className="text-white" />
+                    <div className="absolute -right-12 -bottom-12 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                        <Activity size={180} className="text-white" />
                     </div>
                 </Card>
             </div>

@@ -24,9 +24,16 @@ export function ScanHeader({ scan, onStop, onRerun, onDelete, onExportXLSX, onEx
                         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
                             <MapPin size={20} />
                         </div>
-                        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3 uppercase tracking-tight">
-                            {scan.keyword}
-                        </h1>
+                        <div className="flex flex-col">
+                            <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight leading-none mb-1">
+                                {scan.keyword}
+                            </h1>
+                            {scan.businessName && (
+                                <p className="text-xs font-black text-blue-600 uppercase tracking-widest opacity-80">
+                                    Tracking: {scan.businessName}
+                                </p>
+                            )}
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant={scan.status === 'COMPLETED' ? 'success' : 'blue'} className="font-bold text-[10px] uppercase">{scan.status}</Badge>

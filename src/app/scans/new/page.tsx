@@ -19,7 +19,8 @@ import {
     Navigation,
     Store,
     Maximize2,
-    Plus
+    Plus,
+    Info
 } from 'lucide-react';
 import { Card, Button, Input, Select, Badge } from '@/components/ui';
 import {
@@ -29,6 +30,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/Dialog';
+import { Combobox } from '@/components/ui/Combobox';
+import PointInitializer from '@/components/PointInitializer';
 
 // Dynamically import Map to avoid SSR issues
 const LeafletMap = dynamic(() => import('@/components/ui/Map'), {
@@ -64,16 +67,68 @@ export default function NewScanPage() {
     const [lookingUp, setLookingUp] = useState(false);
     const [lookupUrl, setLookupUrl] = useState('');
     const [isUrlImport, setIsUrlImport] = useState(false);
+    const [isManualValue, setIsManualValue] = useState(false);
+
+    const [gridStrategy, setGridStrategy] = useState<'GEOMETRIC' | 'CITY'>('GEOMETRIC');
+    const [cityConfig, setCityConfig] = useState({ type: 'zip' as 'zip' | 'neighborhood' });
+    const [fetchingCity, setFetchingCity] = useState(false);
+
+    // Location Data State
+    const [countries, setCountries] = useState<any[]>([]);
+    const [states, setStates] = useState<any[]>([]);
+    const [cities, setCities] = useState<any[]>([]);
+    const [selectedCountry, setSelectedCountry] = useState('US');
+    const [selectedState, setSelectedState] = useState('');
+    const [selectedCity, setSelectedCity] = useState('');
+
+    // Load Countries on Mount
+    useEffect(() => {
+        fetch('/api/locations/autocomplete?type=country')
+            .then(res => res.json())
+            .then(data => setCountries(data))
+            .catch(console.error);
+    }, []);
+
+    // Load States when Country changes
+    useEffect(() => {
+        if (!selectedCountry) {
+            setStates([]);
+            return;
+        }
+        fetch(`/api/locations/autocomplete?type=state&countryCode=${selectedCountry}`)
+            .then(res => res.json())
+            .then(data => {
+                setStates(data);
+                setSelectedState(''); // Reset state
+                setCities([]);        // Reset cities
+            })
+            .catch(console.error);
+    }, [selectedCountry]);
+
+    // Load Cities when State changes
+    useEffect(() => {
+        if (!selectedCountry || !selectedState) {
+            setCities([]);
+            return;
+        }
+        fetch(`/api/locations/autocomplete?type=city&countryCode=${selectedCountry}&stateCode=${selectedState}`)
+            .then(res => res.json())
+            .then(data => {
+                setCities(data);
+                setSelectedCity(''); // Reset city
+            })
+            .catch(console.error);
+    }, [selectedCountry, selectedState]);
 
     // Debounced search for business names
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (formData.businessName && formData.businessName.length > 3 && !isUrlImport) {
+            if (formData.businessName && formData.businessName.length > 3 && !isUrlImport && isManualValue) {
                 handleLookup(formData.businessName);
             }
         }, 800);
         return () => clearTimeout(timer);
-    }, [formData.businessName, isUrlImport]);
+    }, [formData.businessName, isUrlImport, isManualValue]);
 
     const handleLookup = async (q: string) => {
         if (q.length < 3) return;
@@ -93,26 +148,29 @@ export default function NewScanPage() {
         }
     };
 
-    const handleUrlImport = async () => {
-        if (!lookupUrl) return;
+    const handleUrlImport = async (urlOverride?: string) => {
+        const targetUrl = urlOverride || lookupUrl;
+        if (!targetUrl) return;
         setLookingUp(true);
         try {
             const res = await fetch('/api/scans/lookup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: lookupUrl })
+                body: JSON.stringify({ url: targetUrl })
             });
             const data = await res.json();
             if (data.business) {
                 setFormData(prev => ({
                     ...prev,
                     businessName: data.business.name,
-                    address: data.business.address,
+                    address: data.business.address || prev.address,
                     centerLat: data.business.lat || prev.centerLat,
                     centerLng: data.business.lng || prev.centerLng
                 }));
-                setLookupUrl('');
+                if (!urlOverride) setLookupUrl('');
                 setIsUrlImport(false);
+                setLookupResults([]); // Clear any previous search results
+                setIsManualValue(false); // Mark as NOT manual so lookup doesn't trigger
             }
         } catch (err) {
             console.error('URL import failed:', err);
@@ -128,12 +186,12 @@ export default function NewScanPage() {
             businessName: biz.name,
             address: biz.address || prev.address
         }));
+        setIsManualValue(false);
         setLookupResults([]);
 
-        // If the result has a URL, we can do a deep lookup to get coordinates
+        // If the result has a URL, we can do a deep lookup to get coordinates and full address
         if (biz.url) {
-            setLookupUrl(biz.url);
-            handleUrlImport();
+            handleUrlImport(biz.url);
         }
     };
 
@@ -193,6 +251,41 @@ export default function NewScanPage() {
             console.error('Geocoding failed:', err);
         } finally {
             setGeocoding(false);
+        }
+    };
+
+    const handleCityFetch = async () => {
+        if (!selectedCity) return;
+        setFetchingCity(true);
+        try {
+            // Get full names for the API
+            const countryName = countries.find(c => c.value === selectedCountry)?.label;
+            const stateName = states.find(s => s.value === selectedState)?.label;
+
+            const res = await fetch(`/api/geocode/city?city=${encodeURIComponent(selectedCity)}&state=${encodeURIComponent(stateName || '')}&country=${encodeURIComponent(countryName || '')}&type=${cityConfig.type}`);
+            const data = await res.json();
+
+            if (data.points && data.points.length > 0) {
+                setCustomPoints(data.points);
+                // Center on the city metadata returned by Nominatim if available, else average
+                const centerLat = data.cityMeta?.lat || (data.points.reduce((sum: number, p: any) => sum + p.lat, 0) / data.points.length);
+                const centerLng = data.cityMeta?.lng || (data.points.reduce((sum: number, p: any) => sum + p.lng, 0) / data.points.length);
+
+                setFormData(prev => ({
+                    ...prev,
+                    centerLat: centerLat,
+                    centerLng: centerLng,
+                    shape: 'SMART', // Mark as smart grid
+                    radius: 10 // approximate
+                }));
+            } else {
+                alert('No points found for this city. Try selecting a different area.');
+            }
+        } catch (err) {
+            console.error('City fetch failed:', err);
+            alert('Failed to fetch city data');
+        } finally {
+            setFetchingCity(false);
         }
     };
 
@@ -289,17 +382,31 @@ export default function NewScanPage() {
                                                 </div>
 
                                                 {isUrlImport ? (
-                                                    <div className="flex gap-2">
-                                                        <Input
-                                                            placeholder="Paste Google Maps URL..."
-                                                            icon={<Navigation size={16} />}
-                                                            value={lookupUrl}
-                                                            onChange={(e) => setLookupUrl(e.target.value)}
-                                                            className="flex-1"
-                                                        />
-                                                        <Button onClick={handleUrlImport} isLoading={lookingUp} variant="secondary">
-                                                            Import
-                                                        </Button>
+                                                    <div className="space-y-4">
+                                                        <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg flex items-start gap-3">
+                                                            <Info size={16} className="text-blue-600 mt-0.5 shrink-0" />
+                                                            <div className="text-[10px] text-blue-800 leading-relaxed font-medium">
+                                                                <p className="font-black uppercase tracking-wider mb-1">How to get the URL:</p>
+                                                                <ol className="list-decimal ml-4 space-y-1">
+                                                                    <li>Search for your business on <a href="https://maps.google.com" target="_blank" className="underline font-black hover:text-blue-600">Google Maps</a></li>
+                                                                    <li>Click <strong>Share</strong> → <strong>Copy Link</strong></li>
+                                                                    <li>Or simply copy the <strong>Browser Address Bar</strong> URL</li>
+                                                                    <li>Short links (goo.gl/maps/...) are fully supported!</li>
+                                                                </ol>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                placeholder="Paste Google Maps URL..."
+                                                                icon={<Navigation size={16} />}
+                                                                value={lookupUrl}
+                                                                onChange={(e) => setLookupUrl(e.target.value)}
+                                                                className="flex-1"
+                                                            />
+                                                            <Button onClick={() => handleUrlImport()} isLoading={lookingUp} variant="secondary">
+                                                                Import
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <div className="relative">
@@ -308,6 +415,7 @@ export default function NewScanPage() {
                                                             icon={<Store size={16} />}
                                                             value={formData.businessName}
                                                             onChange={(e) => {
+                                                                setIsManualValue(true);
                                                                 setFormData({ ...formData, businessName: e.target.value });
                                                             }}
                                                         />
@@ -422,48 +530,133 @@ export default function NewScanPage() {
                                         <p className="text-gray-500 text-sm">Define the area size and density of points.</p>
                                     </div>
                                     <div className="flex bg-gray-100 p-1 rounded-lg">
-                                        {(['SQUARE', 'CIRCLE', 'ZIP', 'SMART'] as const).map(shape => (
-                                            <button
-                                                key={shape}
-                                                onClick={() => setFormData({ ...formData, shape })}
-                                                className={`px-3 py-1.5 text-[10px] font-black tracking-widest uppercase rounded-md transition-all ${formData.shape === shape ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-                                            >
-                                                {shape}
-                                            </button>
-                                        ))}
+                                        <button
+                                            onClick={() => setGridStrategy('GEOMETRIC')}
+                                            className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${gridStrategy === 'GEOMETRIC' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}
+                                        >
+                                            Geometric Grid
+                                        </button>
+                                        <button
+                                            onClick={() => setGridStrategy('CITY')}
+                                            className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${gridStrategy === 'CITY' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}
+                                        >
+                                            Smart City Grid
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Scan Radius (km): <span className="text-blue-600 font-bold">{formData.radius}km</span></label>
-                                            <input
-                                                type="range"
-                                                min="1" max="50" step="1"
-                                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                                value={formData.radius}
-                                                onChange={(e) => setFormData({ ...formData, radius: parseInt(e.target.value) })}
-                                            />
-                                            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-                                                <span>1km</span>
-                                                <span>50km</span>
+                                        {gridStrategy === 'GEOMETRIC' ? (
+                                            <>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Shape</label>
+                                                    <div className="flex gap-2">
+                                                        {(['SQUARE', 'CIRCLE'] as const).map(shape => (
+                                                            <button
+                                                                key={shape}
+                                                                onClick={() => setFormData({ ...formData, shape })}
+                                                                className={`px-3 py-1.5 text-[10px] font-black tracking-widest uppercase rounded-md border ${formData.shape === shape ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500'}`}
+                                                            >
+                                                                {shape}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Scan Radius (km): <span className="text-blue-600 font-bold">{formData.radius}km</span></label>
+                                                    <input
+                                                        type="range"
+                                                        min="1" max="50" step="1"
+                                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                                        value={formData.radius}
+                                                        onChange={(e) => setFormData({ ...formData, radius: parseInt(e.target.value) })}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Grid Density</label>
+                                                    <Select
+                                                        value={formData.gridSize}
+                                                        onChange={(e) => setFormData({ ...formData, gridSize: parseInt(e.target.value) })}
+                                                        icon={<Grid size={16} />}
+                                                    >
+                                                        <option value={3}>3x3 (9 points)</option>
+                                                        <option value={5}>5x5 (25 points)</option>
+                                                        <option value={7}>7x7 (49 points)</option>
+                                                        <option value={9}>9x9 (81 points)</option>
+                                                        <option value={13}>13x13 (169 points)</option>
+                                                    </Select>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="space-y-4 bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-blue-900 uppercase mb-1">Country</label>
+                                                        <Combobox
+                                                            options={countries}
+                                                            value={selectedCountry}
+                                                            onChange={setSelectedCountry}
+                                                            placeholder="Select Country"
+                                                            searchPlaceholder="Search country..."
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-blue-900 uppercase mb-1">State / Province</label>
+                                                        <Combobox
+                                                            options={states}
+                                                            value={selectedState}
+                                                            onChange={setSelectedState}
+                                                            placeholder="Select State"
+                                                            searchPlaceholder="Search state..."
+                                                            disabled={!selectedCountry}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-blue-900 uppercase mb-1">City</label>
+                                                        <Combobox
+                                                            options={cities}
+                                                            value={selectedCity}
+                                                            onChange={setSelectedCity}
+                                                            placeholder="Select City"
+                                                            searchPlaceholder="Search city..."
+                                                            disabled={!selectedState}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="pt-2">
+                                                    <label className="block text-xs font-bold text-blue-900 uppercase mb-2">Grid Strategy</label>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => setCityConfig({ ...cityConfig, type: 'zip' })}
+                                                            className={`flex-1 py-2 text-xs font-bold rounded border ${cityConfig.type === 'zip' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200'}`}
+                                                        >
+                                                            Zip Codes
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setCityConfig({ ...cityConfig, type: 'neighborhood' })}
+                                                            className={`flex-1 py-2 text-xs font-bold rounded border ${cityConfig.type === 'neighborhood' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200'}`}
+                                                        >
+                                                            Neighborhoods
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <Button
+                                                    onClick={handleCityFetch}
+                                                    isLoading={fetchingCity}
+                                                    disabled={!selectedCity || fetchingCity}
+                                                    className="w-full"
+                                                >
+                                                    {fetchingCity ? 'Analyzing City Map...' : 'Generate Smart Grid'}
+                                                </Button>
+                                                {customPoints && customPoints.length > 0 && gridStrategy === 'CITY' && (
+                                                    <p className="text-center text-xs text-green-600 font-bold">
+                                                        Successfully generated {customPoints.length} points!
+                                                    </p>
+                                                )}
                                             </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Grid Density</label>
-                                            <Select
-                                                value={formData.gridSize}
-                                                onChange={(e) => setFormData({ ...formData, gridSize: parseInt(e.target.value) })}
-                                                icon={<Grid size={16} />}
-                                            >
-                                                <option value={3}>3x3 (9 points)</option>
-                                                <option value={5}>5x5 (25 points)</option>
-                                                <option value={7}>7x7 (49 points)</option>
-                                                <option value={9}>9x9 (81 points)</option>
-                                                <option value={13}>13x13 (169 points)</option>
-                                            </Select>
-                                        </div>
-                                        <div className="p-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                                        )}
+
+                                        <div className="p-4 bg-gray-50 rounded-lg border border-dashed border-gray-200 mt-4">
                                             <p className="text-[10px] text-gray-400 font-bold uppercase mb-2">Editor Mode</p>
                                             <p className="text-xs text-gray-500">You can manually drag any blue pin on the map to refine the scan geometry.</p>
                                         </div>
@@ -595,7 +788,7 @@ export default function NewScanPage() {
                                 {scanMode === 'BUSINESS' && (
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-500">Business</span>
-                                        <span className="font-bold text-gray-900 truncate max-w-[120px]">{formData.businessName || '-'}</span>
+                                        <span className="font-bold text-gray-900 text-right flex-1 ml-4 leading-tight">{formData.businessName || '-'}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between items-center">
@@ -627,25 +820,11 @@ export default function NewScanPage() {
                             <Clock className="min-w-4 w-4 mt-0.5" />
                             <p>
                                 This scan will launch <strong>{customPoints?.length || (formData.gridSize * formData.gridSize)}</strong> headless browser instances.
-                                Estimated processing time: <strong>~{Math.ceil((customPoints?.length || 9) * 0.5)} mins</strong>.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
-
-function PointInitializer({ formData, onPointsGenerated, customPoints }: any) {
-    useEffect(() => {
-        if (customPoints === null) {
-            import('@/lib/grid').then(({ generateGrid }) => {
-                const pts = generateGrid(formData.centerLat, formData.centerLng, formData.radius, formData.gridSize, formData.shape);
-                onPointsGenerated(pts);
-            });
-        }
-    }, [formData, customPoints, onPointsGenerated]);
-    return null;
-}
-

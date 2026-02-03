@@ -28,6 +28,19 @@
 
 ---
 
+## 📝 Latest Updates & Known Issues
+
+### Recent Fixes
+- **Unified Profile Scores**: Profile completeness now uses a standardized 0-100% scale.
+- **Improved Address Fetching**: Enhanced extraction logic to capture physical addresses more reliably.
+- **SAB Detection**: Refined logic to prevent storefronts from being incorrectly flagged as Service Area Businesses.
+- **Strategic Analysis**: The Intelligence tab now correctly displays market dominance and competitor threats.
+
+### Known Issues
+- **Business Card Addresses**: Addresses inside the individual business cards may still not reflect properly in some views. This will be resolved in a later release. The underlying data extraction is functioning correctly.
+
+---
+
 ## 🚀 One-Command Installation
 
 The easiest way to set up or update GeoRanker is using our installer:
@@ -79,3 +92,4 @@ Contributions are what make the open-source community an amazing place to learn,
 Distributed under the MIT License. See `LICENSE` for more information.
 
 **Author:** [Danish Fareed](https://github.com/danishfareed)
+**Powered By:** [vdesignu.com](https://vdesignu.com)

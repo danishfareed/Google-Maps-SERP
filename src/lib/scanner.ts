@@ -1,8 +1,9 @@
 import { prisma } from './prisma';
 import { generateGrid } from './grid';
 import { scrapeGMB } from './scraper';
-import { chromium } from 'playwright';
+import { chromium, Browser, BrowserContext, Page } from 'playwright';
 import { logger } from './logger';
+import type { Scan } from '@prisma/client';
 
 /**
  * Derives regional settings based on coordinates.
@@ -53,16 +54,16 @@ function getRegionalSettings(lat: number, lng: number) {
 }
 
 export async function runScan(scanId: string) {
-    let browser: any = null;
-    let context: any = null;
-    let page: any = null;
+    let browser: Browser | null = null;
+    let context: BrowserContext | null = null;
+    let page: Page | null = null;
     let currentProxyId: string | null = null;
-    let scan: any = null;
+    let scan: Scan | null = null;
 
     try {
         await logger.info(`[Launcher] Initializing scanner process...`, 'SCANNER', { scanId });
 
-        scan = await (prisma as any).scan.findUnique({
+        scan = await prisma.scan.findUnique({
             where: { id: scanId },
         });
 
@@ -71,7 +72,7 @@ export async function runScan(scanId: string) {
             return;
         }
 
-        await (prisma as any).scan.update({
+        await prisma.scan.update({
             where: { id: scanId },
             data: { status: 'RUNNING' },
         });
@@ -85,7 +86,7 @@ export async function runScan(scanId: string) {
         await logger.debug(`[Launcher] Generated ${points.length} coordinates for scan.`, 'SCANNER');
 
         // Initial fetch of proxy settings
-        const proxySetting = await (prisma as any).globalSetting.findUnique({ where: { key: 'useSystemProxy' } });
+        const proxySetting = await prisma.globalSetting.findUnique({ where: { key: 'useSystemProxy' } });
         const useSystemProxy = proxySetting ? proxySetting.value === 'true' : true;
 
         async function initBrowser(failedProxyId?: string) {
@@ -95,7 +96,7 @@ export async function runScan(scanId: string) {
             // If a proxy failed, mark it DEAD in the database immediately
             if (failedProxyId) {
                 try {
-                    await (prisma as any).proxy.update({
+                    await prisma.proxy.update({
                         where: { id: failedProxyId },
                         data: { status: 'DEAD', lastTestedAt: new Date() }
                     });
@@ -108,7 +109,7 @@ export async function runScan(scanId: string) {
 
             if (!useSystemProxy) {
                 // Fetch healthy proxies (ACTIVE or UNTESTED)
-                const availableProxies = await (prisma as any).proxy.findMany({
+                const availableProxies = await prisma.proxy.findMany({
                     where: {
                         enabled: true,
                         status: { in: ['ACTIVE', 'UNTESTED'] }
@@ -138,7 +139,7 @@ export async function runScan(scanId: string) {
 
                 // Mark the specific proxy as DEAD if it was the cause
                 if (currentProxyId) {
-                    await (prisma as any).proxy.update({
+                    await prisma.proxy.update({
                         where: { id: currentProxyId },
                         data: { status: 'DEAD', lastTestedAt: new Date() }
                     }).catch(() => { });
@@ -171,7 +172,7 @@ export async function runScan(scanId: string) {
 
         for (const point of points) {
             // Check if scan has been stopped or reset
-            const currentScan = await (prisma as any).scan.findUnique({
+            const currentScan = await prisma.scan.findUnique({
                 where: { id: scanId },
                 select: { status: true }
             });
@@ -209,7 +210,7 @@ export async function runScan(scanId: string) {
             if (!success) {
                 await logger.warn(`Point capture failed: ${point.lat}, ${point.lng} after max attempts.`, 'SCANNER');
                 // We create a result with empty data to allow the scan to continue but show the failure
-                await (prisma as any).result.create({
+                await prisma.result.create({
                     data: {
                         scanId: scan.id,
                         lat: point.lat,
@@ -232,7 +233,7 @@ export async function runScan(scanId: string) {
                 }
             }
 
-            await (prisma as any).result.create({
+            await prisma.result.create({
                 data: {
                     scanId: scan.id,
                     lat: point.lat,
@@ -258,7 +259,7 @@ export async function runScan(scanId: string) {
 
         // Check for rank changes and create alerts
         if (scan.businessName) {
-            const previousScan = await (prisma as any).scan.findFirst({
+            const previousScan = await prisma.scan.findFirst({
                 where: {
                     keyword: scan.keyword,
                     businessName: scan.businessName,
@@ -270,30 +271,56 @@ export async function runScan(scanId: string) {
             });
 
             if (previousScan) {
-                const currentResults = await (prisma as any).result.findMany({ where: { scanId } });
+                const currentResults = await prisma.result.findMany({ where: { scanId } });
                 const currentAvg = currentResults.filter((r: any) => r.rank !== null).reduce((acc: any, r: any) => acc + (r.rank || 21), 0) / (currentResults.filter((r: any) => r.rank !== null).length || 1);
                 const previousAvg = previousScan.results.filter((r: any) => r.rank !== null).reduce((acc: any, r: any) => acc + (r.rank || 21), 0) / (previousScan.results.filter((r: any) => r.rank !== null).length || 1);
 
                 const diff = previousAvg - currentAvg;
                 if (Math.abs(diff) >= 0.5) {
-                    await (prisma as any).alert.create({
+                    // Use transaction to ensure both alert and status update succeed together
+                    await prisma.$transaction([
+                        prisma.alert.create({
+                            data: {
+                                type: diff > 0 ? 'RANK_UP' : 'RANK_DOWN',
+                                message: `${scan.businessName} rank ${diff > 0 ? 'improved' : 'dropped'} by ${Math.abs(diff).toFixed(1)} points for "${scan.keyword}"`,
+                                scanId: scan.id
+                            }
+                        }),
+                        prisma.scan.update({
+                            where: { id: scanId },
+                            data: {
+                                status: 'COMPLETED',
+                                nextRun
+                            }
+                        })
+                    ]);
+                } else {
+                    await prisma.scan.update({
+                        where: { id: scanId },
                         data: {
-                            type: diff > 0 ? 'RANK_UP' : 'RANK_DOWN',
-                            message: `${scan.businessName} rank ${diff > 0 ? 'improved' : 'dropped'} by ${Math.abs(diff).toFixed(1)} points for "${scan.keyword}"`,
-                            scanId: scan.id
+                            status: 'COMPLETED',
+                            nextRun
                         }
                     });
                 }
+            } else {
+                await prisma.scan.update({
+                    where: { id: scanId },
+                    data: {
+                        status: 'COMPLETED',
+                        nextRun
+                    }
+                });
             }
+        } else {
+            await prisma.scan.update({
+                where: { id: scanId },
+                data: {
+                    status: 'COMPLETED',
+                    nextRun
+                }
+            });
         }
-
-        await (prisma as any).scan.update({
-            where: { id: scanId },
-            data: {
-                status: 'COMPLETED',
-                nextRun
-            },
-        });
 
         await logger.info(`Scan sequence completed successfully for "${scan.keyword}"`, 'SCANNER', { scanId });
     } catch (error) {
@@ -303,13 +330,13 @@ export async function runScan(scanId: string) {
             stack: error instanceof Error ? error.stack : undefined
         });
 
-        await (prisma as any).scan.update({
+        await prisma.scan.update({
             where: { id: scanId },
             data: { status: 'FAILED' },
         }).catch(() => { });
 
         if (scan) {
-            await (prisma as any).alert.create({
+            await prisma.alert.create({
                 data: {
                     type: 'SCAN_ERROR',
                     message: `Scan failed for "${scan.keyword}": ${errorMsg}`,

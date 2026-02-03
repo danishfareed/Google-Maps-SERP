@@ -2,14 +2,16 @@
 
 import { useEffect, useState, use } from 'react';
 import dynamic from 'next/dynamic';
-import { RefreshCw, Trophy, List, ChevronLeft, ChevronRight, ExternalLink, MapPin } from 'lucide-react';
+import { RefreshCw, Trophy, List, ChevronLeft, ChevronRight, ExternalLink, MapPin, Layers, Eye, Target } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card, Button, Badge, Input } from '@/components/ui';
 import { exportToXLSX, exportToPDF } from '@/lib/export';
 import { ScanHeader } from '@/components/scans/ScanHeader';
-import { AIInsights } from '@/components/scans/AIInsights';
+// AIInsights removed as redundant
 import { PinInspectionSidebar } from '@/components/scans/PinInspectionSidebar';
 import { BusinessCard } from '@/components/scans/BusinessCard';
+import { TrendChart } from '@/components/scans/TrendChart';
+import { CompetitorIntelligenceDashboard } from '@/components/scans/CompetitorIntelligence';
 
 // Dynamically import Map component to avoid SSR issues with Leaflet
 const MapComponent = dynamic(() => import('@/components/ui/Map'), {
@@ -40,6 +42,7 @@ interface Scan {
     centerLat: number;
     centerLng: number;
     businessName?: string;
+    customPoints?: string; // JSON string
     results: Result[];
 }
 
@@ -57,12 +60,13 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
     const resolvedParams = use(params);
     const [scan, setScan] = useState<Scan | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'map' | 'list' | 'competitors'>('map');
+    const [activeTab, setActiveTab] = useState<'map' | 'list' | 'competitors' | 'intelligence'>('map');
     const [selectedPoint, setSelectedPoint] = useState<Result | null>(null);
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
     const [filter, setFilter] = useState<'all' | 'top3' | 'top10' | 'unranked'>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [sharing, setSharing] = useState(false);
+    const [showHeatmap, setShowHeatmap] = useState(false);
 
     useEffect(() => {
         const fetchScan = () => {
@@ -94,10 +98,38 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
 
     if (!scan) return <div>Scan not found</div>;
 
-    const totalPoints = scan.gridSize * scan.gridSize;
+    const totalPoints = (() => {
+        if (scan.customPoints) {
+            try {
+                const points = JSON.parse(scan.customPoints);
+                if (Array.isArray(points)) return points.length;
+            } catch (e) {
+                console.error('Failed to parse customPoints for total count', e);
+            }
+        }
+        return scan.gridSize * scan.gridSize;
+    })();
+
     const completedPoints = scan.results.length;
 
     const avgRank = scan.results.reduce((acc, r) => acc + (r.rank || 20), 0) / (completedPoints || 1);
+
+    // Visibility Score: Weighted sum of click-through probabilities by rank
+    // CTR model based on industry benchmarks for local pack rankings
+    const getCTR = (rank: number | null): number => {
+        if (!rank) return 0;
+        const ctrByRank: { [key: number]: number } = {
+            1: 0.325, 2: 0.175, 3: 0.115,
+            4: 0.07, 5: 0.05, 6: 0.04, 7: 0.03, 8: 0.025, 9: 0.02, 10: 0.015,
+            11: 0.005, 12: 0.005, 13: 0.005, 14: 0.005, 15: 0.005,
+            16: 0.005, 17: 0.005, 18: 0.005, 19: 0.005, 20: 0.005
+        };
+        return ctrByRank[rank] || 0;
+    };
+
+    const visibilityScore = completedPoints > 0
+        ? (scan.results.reduce((acc, r) => acc + getCTR(r.rank), 0) / completedPoints) * 100
+        : 0;
 
     const getTopResults = (jsonStr: string): RankedBusiness[] => {
         try {
@@ -277,6 +309,48 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                 onShare={handleShare}
             />
 
+            {/* Visibility Score Card */}
+            {scan.businessName && completedPoints > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-4 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-xs font-bold uppercase tracking-widest opacity-80">Visibility Score</h3>
+                            <Eye size={18} className="opacity-60" />
+                        </div>
+                        <p className="text-4xl font-black">{visibilityScore.toFixed(1)}%</p>
+                        <p className="text-xs opacity-70 mt-1">
+                            {visibilityScore >= 20 ? 'Excellent visibility' :
+                                visibilityScore >= 10 ? 'Good visibility' :
+                                    visibilityScore >= 5 ? 'Average visibility' : 'Needs improvement'}
+                        </p>
+                    </Card>
+                    <Card className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Average Rank</h3>
+                            <Target size={18} className="text-gray-400" />
+                        </div>
+                        <p className="text-4xl font-black text-gray-900">#{avgRank.toFixed(1)}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                            {avgRank <= 3 ? 'Top 3 performer' :
+                                avgRank <= 10 ? 'Page 1 average' : 'Below fold'}
+                        </p>
+                    </Card>
+                    <Card className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Scan Progress</h3>
+                            <MapPin size={18} className="text-gray-400" />
+                        </div>
+                        <p className="text-4xl font-black text-gray-900">{completedPoints}/{totalPoints}</p>
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                            <div
+                                className="bg-emerald-500 h-1.5 rounded-full transition-all"
+                                style={{ width: `${(completedPoints / totalPoints) * 100}%` }}
+                            />
+                        </div>
+                    </Card>
+                </div>
+            )}
+
             {/* Competitor Performance Analytics */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -311,7 +385,16 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                 </div>
             </div>
 
-            <AIInsights avgRank={avgRank} scan={scan} totalPoints={totalPoints} competitors={competitorsList} />
+
+
+            {/* Historical Trend Chart - Only show if business is being tracked */}
+            {scan.businessName && (
+                <TrendChart
+                    keyword={scan.keyword}
+                    businessName={scan.businessName}
+                    currentScanId={scan.id}
+                />
+            )}
 
             {/* Main Content Area */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -339,6 +422,13 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                                 >
                                     Competitors
                                 </button>
+                                <button
+                                    onClick={() => setActiveTab('intelligence')}
+                                    className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${activeTab === 'intelligence' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}
+                                >
+                                    <Trophy size={12} />
+                                    Intelligence
+                                </button>
                             </div>
                             <div className="flex items-center gap-3">
                                 {activeTab === 'competitors' ? (
@@ -364,6 +454,14 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                                             <option value="top10">Top 10 Only</option>
                                             <option value="unranked">Unranked</option>
                                         </select>
+                                        <button
+                                            onClick={() => setShowHeatmap(!showHeatmap)}
+                                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 ${showHeatmap ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                            title="Toggle Heatmap Layer"
+                                        >
+                                            <Layers size={12} />
+                                            Heatmap
+                                        </button>
                                     </>
                                 )}
                                 <span className="text-[10px] text-gray-400 font-mono tracking-tighter uppercase font-bold">Progress: {completedPoints}/{totalPoints}</span>
@@ -378,6 +476,7 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                                     points={scan.results.map(r => ({ ...r, hasData: true })) || []}
                                     gridSize={scan.gridSize}
                                     onPointClick={(point) => setSelectedPoint(point as unknown as Result)}
+                                    showHeatmap={showHeatmap}
                                 />
                             ) : activeTab === 'list' ? (
                                 <div className="h-full bg-white overflow-y-auto custom-scrollbar">
@@ -437,7 +536,7 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                                         })}
                                     </div>
                                 </div>
-                            ) : (
+                            ) : activeTab === 'competitors' ? (
                                 <div className="h-full bg-white overflow-y-auto no-scrollbar">
                                     <div className="p-4">
                                         <table className="w-full text-left text-xs">
@@ -526,7 +625,15 @@ export default function ScanReportPage({ params }: { params: Promise<{ id: strin
                                         </table>
                                     </div>
                                 </div>
-                            )}
+                            ) : activeTab === 'intelligence' ? (
+                                <div className="h-full bg-gray-50 overflow-y-auto p-4">
+                                    <CompetitorIntelligenceDashboard
+                                        results={scan.results}
+                                        targetBusinessName={scan.businessName}
+                                        totalPoints={totalPoints}
+                                    />
+                                </div>
+                            ) : null}
                         </div>
                     </Card>
                 </div>

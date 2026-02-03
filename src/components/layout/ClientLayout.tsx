@@ -38,6 +38,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 <PageTransition>
                     {children}
                 </PageTransition>
+
+                <footer className="mt-20 py-6 border-t border-gray-200/60 text-center">
+                    <p className="text-xs text-gray-400 font-medium">
+                        Powered by <a href="https://vdesignu.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-bold transition-colors">vdesignu.com</a>
+                    </p>
+                </footer>
             </main>
             <UpdateNotifier />
         </div>

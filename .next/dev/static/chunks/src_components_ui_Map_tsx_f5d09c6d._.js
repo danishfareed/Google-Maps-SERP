@@ -105,7 +105,7 @@ const RankMarker = ({ point, onClick, onMove })=>{
             }
         }, void 0, false, {
             fileName: "[project]/src/components/ui/Map.tsx",
-            lineNumber: 100,
+            lineNumber: 101,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -137,7 +137,7 @@ const RankMarker = ({ point, onClick, onMove })=>{
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 131,
+                        lineNumber: 132,
                         columnNumber: 25
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -147,7 +147,7 @@ const RankMarker = ({ point, onClick, onMove })=>{
                             point.lat.toFixed(4),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 135,
+                                lineNumber: 136,
                                 columnNumber: 56
                             }, ("TURBOPACK compile-time value", void 0)),
                             "Lng: ",
@@ -155,23 +155,23 @@ const RankMarker = ({ point, onClick, onMove })=>{
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 134,
+                        lineNumber: 135,
                         columnNumber: 25
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ui/Map.tsx",
-                lineNumber: 130,
+                lineNumber: 131,
                 columnNumber: 21
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/src/components/ui/Map.tsx",
-            lineNumber: 129,
+            lineNumber: 130,
             columnNumber: 17
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/components/ui/Map.tsx",
-        lineNumber: 115,
+        lineNumber: 116,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -202,7 +202,7 @@ _s2(MapResizer, "IoceErwr5KVGS9kN4RQ1bOkYMAg=", false, function() {
     ];
 });
 _c3 = MapResizer;
-function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode = false, radius = 5, gridSize = 3, onPointClick, onPointMove, onGridMove }) {
+function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode = false, radius = 5, gridSize = 3, onPointClick, onPointMove, onGridMove, showHeatmap = false }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "h-full w-full relative z-0 bg-gray-100",
         children: [
@@ -221,12 +221,12 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         position: "bottomright"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 178,
+                        lineNumber: 180,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MapResizer, {}, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 179,
+                        lineNumber: 181,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$leaflet$2f$lib$2f$TileLayer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TileLayer"], {
@@ -234,7 +234,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 181,
+                        lineNumber: 183,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MapUpdater, {
@@ -242,14 +242,14 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         zoom: zoom
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 185,
+                        lineNumber: 187,
                         columnNumber: 17
                     }, this),
                     selectionMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SelectionHandler, {
                         onCenterChange: onCenterChange
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 187,
+                        lineNumber: 189,
                         columnNumber: 35
                     }, this),
                     (selectionMode || onGridMove) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -266,7 +266,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 192,
+                                lineNumber: 194,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$leaflet$2f$lib$2f$Marker$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Marker"], {
@@ -282,24 +282,52 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 197,
+                                lineNumber: 199,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true),
+                    showHeatmap && points.map((point, i)=>{
+                        let heatColor = 'rgba(156, 163, 175, 0.3)'; // gray for unranked
+                        if (point.rank !== null) {
+                            if (point.rank <= 3) {
+                                heatColor = 'rgba(34, 197, 94, 0.35)'; // green
+                            } else if (point.rank <= 10) {
+                                heatColor = 'rgba(245, 158, 11, 0.35)'; // amber
+                            } else {
+                                heatColor = 'rgba(239, 68, 68, 0.35)'; // red
+                            }
+                        }
+                        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$leaflet$2f$lib$2f$Circle$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Circle"], {
+                            center: [
+                                point.lat,
+                                point.lng
+                            ],
+                            radius: 800,
+                            pathOptions: {
+                                color: 'transparent',
+                                fillColor: heatColor,
+                                fillOpacity: 1
+                            }
+                        }, `heat-${point.id || i}`, false, {
+                            fileName: "[project]/src/components/ui/Map.tsx",
+                            lineNumber: 227,
+                            columnNumber: 25
+                        }, this);
+                    }),
                     points.map((point, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(RankMarker, {
                             point: point,
                             onClick: onPointClick,
                             onMove: onPointMove
                         }, point.id || i, false, {
                             fileName: "[project]/src/components/ui/Map.tsx",
-                            lineNumber: 214,
+                            lineNumber: 242,
                             columnNumber: 21
                         }, this))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ui/Map.tsx",
-                lineNumber: 171,
+                lineNumber: 173,
                 columnNumber: 13
             }, this),
             !selectionMode && points.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -310,7 +338,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         children: "Rank Legend"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 226,
+                        lineNumber: 254,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -320,7 +348,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 className: "w-3 h-3 rounded-full bg-green-500 border border-green-700"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 228,
+                                lineNumber: 256,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -328,13 +356,13 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 children: "1 - 3"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 229,
+                                lineNumber: 257,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 227,
+                        lineNumber: 255,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -344,7 +372,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 className: "w-3 h-3 rounded-full bg-amber-500 border border-amber-700"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 232,
+                                lineNumber: 260,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -352,13 +380,13 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 children: "4 - 10"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 233,
+                                lineNumber: 261,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 231,
+                        lineNumber: 259,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -368,7 +396,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 className: "w-3 h-3 rounded-full bg-red-500 border border-red-700"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 236,
+                                lineNumber: 264,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -376,19 +404,19 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                                 children: "11+"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ui/Map.tsx",
-                                lineNumber: 237,
+                                lineNumber: 265,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 235,
+                        lineNumber: 263,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ui/Map.tsx",
-                lineNumber: 225,
+                lineNumber: 253,
                 columnNumber: 17
             }, this),
             selectionMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -399,7 +427,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         children: "Interactive Mode"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 244,
+                        lineNumber: 272,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -407,7 +435,7 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         children: "Click map to set center location."
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 245,
+                        lineNumber: 273,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -415,19 +443,19 @@ function LeafletMap({ center, zoom, points = [], onCenterChange, selectionMode =
                         children: "Drag center marker to move grid."
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/Map.tsx",
-                        lineNumber: 246,
+                        lineNumber: 274,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ui/Map.tsx",
-                lineNumber: 243,
+                lineNumber: 271,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/Map.tsx",
-        lineNumber: 170,
+        lineNumber: 172,
         columnNumber: 9
     }, this);
 }

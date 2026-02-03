@@ -44,6 +44,7 @@ interface MapProps {
     onPointClick?: (point: Point) => void;
     onPointMove?: (pointId: string, lat: number, lng: number) => void;
     onGridMove?: (lat: number, lng: number) => void;
+    showHeatmap?: boolean;
 }
 
 function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }) {
@@ -164,7 +165,8 @@ export default function LeafletMap({
     gridSize = 3,
     onPointClick,
     onPointMove,
-    onGridMove
+    onGridMove,
+    showHeatmap = false
 }: MapProps) {
     return (
         <div className="h-full w-full relative z-0 bg-gray-100">
@@ -208,6 +210,32 @@ export default function LeafletMap({
                         />
                     </>
                 )}
+
+                {/* Heatmap Layer - Large gradient circles for ranking density */}
+                {showHeatmap && points.map((point, i) => {
+                    let heatColor = 'rgba(156, 163, 175, 0.3)'; // gray for unranked
+                    if (point.rank !== null) {
+                        if (point.rank <= 3) {
+                            heatColor = 'rgba(34, 197, 94, 0.35)'; // green
+                        } else if (point.rank <= 10) {
+                            heatColor = 'rgba(245, 158, 11, 0.35)'; // amber
+                        } else {
+                            heatColor = 'rgba(239, 68, 68, 0.35)'; // red
+                        }
+                    }
+                    return (
+                        <Circle
+                            key={`heat-${point.id || i}`}
+                            center={[point.lat, point.lng]}
+                            radius={800} // 800 meters
+                            pathOptions={{
+                                color: 'transparent',
+                                fillColor: heatColor,
+                                fillOpacity: 1,
+                            }}
+                        />
+                    );
+                })}
 
                 {/* Ranking Points */}
                 {points.map((point, i) => (

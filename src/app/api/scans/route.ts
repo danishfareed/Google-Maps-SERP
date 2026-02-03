@@ -33,7 +33,7 @@ export async function POST(req: Request) {
         const centerLat = typeof lat === 'number' ? lat : 41.8781;
         const centerLng = typeof lng === 'number' ? lng : -87.6298;
 
-        const scan = await (prisma as any).scan.create({
+        const scan = await prisma.scan.create({
             data: {
                 keyword,
                 centerLat,
