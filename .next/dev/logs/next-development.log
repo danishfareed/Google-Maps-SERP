@@ -20198,3 +20198,9 @@ Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
 [83:05:12.859] Server  LOG     [DEBUG] [SCANNER] [Scraper] Extracted 19 entities.
 [83:05:12.865] Server  LOG     [DEBUG] [SCANNER] Captured point 41.74642174500004,-87.7189480508623. Target Rank: N/A
 [83:05:16.482] Server  LOG     [INFO] [SCANNER] Scan sequence completed successfully for "who buys junk cars"
+[83:48:48.725] Server  LOG     ✓ Compiled in 84ms
+[83:51:28.296] Server  WARN    ⚠ Unsupported metadata themeColor is configured in metadata export in /scans/[id]. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[83:51:28.297] Server  WARN    ⚠ Unsupported metadata viewport is configured in metadata export in /scans/[id]. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[83:51:28.298] Server  LOG     ✓ Compiled in 125ms

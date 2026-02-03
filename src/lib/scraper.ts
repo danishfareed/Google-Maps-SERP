@@ -468,6 +468,10 @@ async function extractFromAPIData(page: Page): Promise<ScrapeResult[]> {
                 safeGet(biz, 3),        // Street/Building name
                 safeGet(biz, 183, 1, 2), // Address components
                 safeGet(biz, 183, 1, 0), // Street
+                safeGet(biz, 183, 0, 0, 1), // Alternative street index
+                safeGet(biz, 6, 2),     // Another possible location
+                safeGet(biz, 42, 0),    // Pleper-style fallback
+                safeGet(biz, 178, 0, 1), // Near phone data
             ].map(cand => {
                 if (!cand) return '';
                 if (Array.isArray(cand)) return cand.filter(v => typeof v === 'string').join(', ');
@@ -482,29 +486,35 @@ async function extractFromAPIData(page: Page): Promise<ScrapeResult[]> {
                     // TRUST GOOGLE: If it's a formatted address (index 18 or 39), accept it even without digits
                     const isFormattedAddress = candidate === safeGet(biz, 18) || candidate === safeGet(biz, 39);
 
-                    // Standard check: digit OR street identifier
+                    // Standard check: digit OR street identifier OR commas (cities often have commas)
                     const hasDigit = /\d/.test(candidate);
-                    const hasStreetWord = /\b(st|street|ave|avenue|rd|road|blvd|dr|drive|ln|lane|way|ct|court|pl|place|building|suite|floor|univ|campus|square|market|plaza)\b/i.test(candidate);
+                    const hasStreetWord = /\b(st|street|ave|avenue|rd|road|blvd|dr|drive|ln|lane|way|ct|court|pl|place|building|suite|floor|univ|campus|square|market|plaza|hwy|highway|pkwy|parkway)\b/i.test(candidate);
+                    const hasComma = candidate.includes(',');
 
-                    if (isFormattedAddress || hasDigit || hasStreetWord) {
+                    if (isFormattedAddress || hasDigit || hasStreetWord || hasComma) {
                         address = candidate;
                     }
                 }
             }
 
-            // Deep search fallback
+            // AGGRESSIVE Deep search fallback - scan entire business object
             if (!address) {
                 const deepFindAddress = (obj: any, depth: number = 0): string | null => {
-                    if (depth > 5) return null;
+                    if (depth > 8) return null; // Increased depth
                     if (Array.isArray(obj)) {
                         for (const item of obj) {
                             if (typeof item === 'string') {
-                                if (item.length > 5 && item.length < 100 &&
-                                    /\d/.test(item) &&
-                                    /\b(st|street|ave|avenue|rd|road|blvd|dr|drive|ln|lane|way|ct|court|pl|place)\b/i.test(item) &&
+                                // Relaxed pattern: accept strings with digits AND (comma OR street word)
+                                const hasDigit = /\d/.test(item);
+                                const hasComma = item.includes(',');
+                                const hasStreetWord = /\b(st|street|ave|avenue|rd|road|blvd|dr|drive|ln|lane|way|ct|court|pl|place|building|suite|floor|univ|campus|square|market|plaza|hwy|highway|pkwy|parkway)\b/i.test(item);
+
+                                if (item.length > 5 && item.length < 150 &&
+                                    hasDigit && (hasComma || hasStreetWord) &&
                                     !isRatingPattern(item) &&
                                     !item.includes(' · ') &&
-                                    !/^(open|closed|map)/i.test(item)) {
+                                    !/^(open|closed|map|http|www\.|@)/i.test(item) &&
+                                    !/^\+?\d[\d\s\-()]+$/.test(item)) { // not a phone number
                                     return item;
                                 }
                             } else if (typeof item === 'object' && item !== null) {
@@ -512,17 +522,27 @@ async function extractFromAPIData(page: Page): Promise<ScrapeResult[]> {
                                 if (found) return found;
                             }
                         }
+                    } else if (typeof obj === 'object' && obj !== null) {
+                        for (const key in obj) {
+                            const found = deepFindAddress(obj[key], depth + 1);
+                            if (found) return found;
+                        }
                     }
                     return null;
                 };
 
+                // Scan multiple top-level indices
                 const fallback = deepFindAddress(safeGet(biz, 2)) ||
                     deepFindAddress(safeGet(biz, 4)) ||
                     deepFindAddress(safeGet(biz, 34)) ||
-                    deepFindAddress(safeGet(biz, 39));
+                    deepFindAddress(safeGet(biz, 39)) ||
+                    deepFindAddress(safeGet(biz, 183)) ||
+                    deepFindAddress(safeGet(biz, 178)) ||
+                    deepFindAddress(biz); // Last resort: scan entire object
 
                 if (fallback) address = fallback;
             }
+
 
             // Extract other fields
             const phone = (safeGet(biz, 178, 0, 3) as string) || (safeGet(biz, 178, 0, 0) as string) || (safeGet(biz, 7, 0) as string) || '';

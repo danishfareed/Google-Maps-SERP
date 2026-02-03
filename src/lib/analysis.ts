@@ -32,7 +32,9 @@ export interface CompetitorProfile {
     isSAB?: boolean;
     businessProfileId?: string;
     photosCount?: number;
+    yearsInBusiness?: number;
 }
+
 
 export interface ReviewMetrics {
     avgRating: number;
