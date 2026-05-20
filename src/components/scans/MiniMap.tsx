@@ -70,8 +70,7 @@ export function MiniMap({ lat, lng, rank, onEnlarge }: MiniMapProps) {
                 className="w-full h-full z-0"
             >
                 <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                />
+url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"                />
                 <Marker position={[lat, lng]} icon={createNumberedMarker(rank, 24)} />
             </MapContainer>
 
