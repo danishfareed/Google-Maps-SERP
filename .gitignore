@@ -44,6 +44,9 @@ pleper_chrome_extension/
 /electron/dist/
 tsconfig.tsbuildinfo
 
+# Playwright browsers downloaded at build time for bundling
+/ms-playwright/
+
 # Test scripts
 test_maps.js
 

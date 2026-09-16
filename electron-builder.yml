@@ -99,6 +99,13 @@ extraResources:
       - "**/*.json"
   - from: "prisma/schema.prisma"
     to: "prisma/schema.prisma"
+  # Playwright Chromium, downloaded into ./ms-playwright at build time (per
+  # target OS/arch). Bundling it removes the fragile runtime download that
+  # caused "Executable doesn't exist" crashes on first scan.
+  - from: "ms-playwright"
+    to: "playwright-browsers"
+    filter:
+      - "**/*"
 
 asar: true
 asarUnpack:

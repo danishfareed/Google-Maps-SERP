@@ -1,6 +1,6 @@
 {
   "name": "gbpranktracker",
-  "version": "1.9.4",
+  "version": "1.9.7",
   "description": "GBP Rank Tracker — Local SEO Intelligence Platform",
   "main": "electron/dist/main.js",
   "scripts": {
@@ -12,11 +12,12 @@
     "electron:dev": "node scripts/electron-dev.js",
     "electron:compile": "tsc -p electron/tsconfig.json",
     "electron:prepare": "npm run build && node scripts/copy-static.js && npm run electron:compile",
-    "electron:build": "npm run electron:prepare && electron-builder",
-    "electron:build:mac": "npm run electron:prepare && electron-builder --mac",
-    "electron:build:win": "npm run electron:prepare && electron-builder --win",
-    "electron:build:linux": "npm run electron:prepare && electron-builder --linux",
-    "electron:publish": "npm run electron:prepare && electron-builder --publish always"
+    "playwright:bundle": "node scripts/bundle-playwright.js",
+    "electron:build": "npm run electron:prepare && npm run playwright:bundle && electron-builder",
+    "electron:build:mac": "npm run electron:prepare && npm run playwright:bundle && electron-builder --mac",
+    "electron:build:win": "npm run electron:prepare && npm run playwright:bundle && electron-builder --win",
+    "electron:build:linux": "npm run electron:prepare && npm run playwright:bundle && electron-builder --linux",
+    "electron:publish": "npm run electron:prepare && npm run playwright:bundle && electron-builder --publish always"
   },
   "keywords": [],
   "author": "Danish Fareed",

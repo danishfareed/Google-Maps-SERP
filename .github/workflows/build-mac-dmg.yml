@@ -1,0 +1,79 @@
+name: Build macOS DMG (artifact)
+
+# Manually-triggered build that produces the macOS .dmg on a macOS runner and
+# uploads it as a downloadable workflow artifact. Unlike build-desktop.yml this
+# does NOT publish to a GitHub release, so it works from a fork without needing
+# publish permissions on the upstream repository.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+
+    env:
+      NODE_OPTIONS: '--max-old-space-size=4096'
+      DATABASE_URL: 'file:./prisma/dev.db'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Python setuptools (macOS)
+        run: pip3 install setuptools --break-system-packages || pip3 install setuptools || true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Create database for build
+        run: npx prisma db push --skip-generate --accept-data-loss
+
+      - name: Build Next.js
+        run: npx next build
+
+      - name: Verify standalone output exists
+        run: |
+          node -e "const fs=require('fs'); if(!fs.existsSync('.next/standalone/server.js')){console.error('ERROR: standalone server.js missing - Next.js build did not produce standalone output');process.exit(1);} console.log('Standalone output verified.');"
+
+      - name: Copy static assets
+        run: node scripts/copy-static.js
+
+      - name: Compile Electron TypeScript
+        run: npm run electron:compile
+
+      - name: Rebuild better-sqlite3 for Electron
+        run: npx @electron/rebuild -f -w better-sqlite3
+
+      - name: Create empty data/postal directory
+        run: node -e "require('fs').mkdirSync('data/postal',{recursive:true})"
+
+      - name: Download Playwright Chromium for bundling
+        run: node scripts/bundle-playwright.js
+
+      - name: Build Electron DMG (macOS, no publish)
+        run: npx electron-builder --mac --publish never
+        env:
+          # Ad-hoc sign with "-" identity — no Apple account needed.
+          # Prevents "app is damaged" Gatekeeper error on macOS 13+.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GBP-Rank-Tracker-macOS-dmg
+          path: dist-electron/*.dmg
+          if-no-files-found: error
+          retention-days: 14

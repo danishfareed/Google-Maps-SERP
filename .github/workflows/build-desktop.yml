@@ -68,6 +68,9 @@ jobs:
       - name: Create empty data/postal directory
         run: node -e "require('fs').mkdirSync('data/postal',{recursive:true})"
 
+      - name: Download Playwright Chromium for bundling
+        run: node scripts/bundle-playwright.js
+
       - name: Build Electron app (macOS)
         if: matrix.platform == 'mac'
         run: npx electron-builder --mac --publish always

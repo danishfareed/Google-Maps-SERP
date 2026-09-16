@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.7] - 2026-09-16
+
+### Bug Fixes
+
+Stops the false "Script failed to execute" crash reports and makes local builds bundle Chromium.
+
+#### Fixed
+- **False "Script failed to execute" crash reports** — `updateSplashStatus()` called `webContents.executeJavaScript()` (which returns a Promise) inside a plain `try/catch`, which cannot catch an async rejection. At startup the status updates run before the splash DOM has loaded, so `document.getElementById('status')` was `null`, the injected script threw, and the rejection surfaced as an `unhandledRejection` — "Script failed to execute, this normally means an error was thrown" — which the crash reporter logged and re-offered on next launch, even though the app kept running. The injected script now guards the element, waits for `did-finish-load`, and the promise rejection is caught. This eliminates the spurious crash reports behind the recurring `[Crash] Script failed to execute` issues.
+- **Local builds now bundle Chromium too** — added `scripts/bundle-playwright.js`, run by every `electron:build*` npm script (and mirrored in CI), so a local `npm run electron:build:mac` produces an app with Chromium bundled — not just CI builds.
+
+---
+
+## [1.9.6] - 2026-09-16
+
+### Bug Fixes
+
+Definitive fix for the "Executable doesn't exist" / "Script failed to execute" crash that persisted in 1.9.5.
+
+#### Fixed
+- **Chromium now bundled with the app (no runtime download)** — 1.9.5 tried to download Playwright's Chromium on first launch, but in a packaged app the `playwright-core` install CLI is pruned by Next.js standalone tracing and a scan can start before the ~150 MB download finishes, so the browser was frequently missing and scans crashed with `browserType.launch: Executable doesn't exist at .../chrome-headless-shell`. The build now downloads `chromium` + `chromium-headless-shell` at build time (per target OS/arch) and ships them inside app resources; `getPlaywrightBrowsersPath()` points Playwright at the bundled copy in packaged builds. The runtime downloader remains only as a dev/fallback path.
+
+---
+
+## [1.9.5] - 2026-09-16
+
+### Bug Fixes
+
+Resolves the two most-reported crash classes (`spawn EINVAL`, "Executable doesn't exist") and the blank-map bug from v1.9.4.
+
+#### Fixed
+- **`spawn EINVAL` crash on Windows** — The Playwright browser installer shelled out to `npx.cmd`, which throws `spawn EINVAL` under Node ≥20 (which refuses to spawn `.cmd`/`.bat` files without an explicit shell) and isn't present in a packaged app at all. The installer now runs the bundled `playwright-core` CLI directly via the Electron binary in Node mode (`ELECTRON_RUN_AS_NODE=1`), the same mechanism used to launch the embedded server. Fixes reported crashes on startup after the server became ready.
+- **"Executable doesn't exist" / "Script failed to execute" crash** — Two causes: (1) browsers never downloaded because the `npx` invocation above failed silently, and (2) the executable-path lookup only recognized the full-Chromium layout, so it returned nothing even after a successful install. The lookup now also detects the `chromium_headless_shell-*` layout that `headless: true` launches use, and the installer downloads both `chromium` and `chromium-headless-shell`.
+- **Blank/gray maps (CSP blocks CARTO tiles)** — The injected Content Security Policy's `img-src` directive omitted the CARTO tile domain used by the Map and MiniMap components. Added `https://*.basemaps.cartocdn.com` so basemap tiles load inside the Electron renderer.
+
+---
+
 ## [1.9.4] - 2026-03-22
 
 ### Crash Reporting

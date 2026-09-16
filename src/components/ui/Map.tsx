@@ -14,6 +14,17 @@ import {
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
+// ── CARTO basemap tiles ──
+// The key is read from the environment so it is never committed to source.
+// Put it in .env.local as NEXT_PUBLIC_CARTO_API_KEY (see .env.example).
+// When no key is set we fall back to CARTO's keyless public endpoint, so the
+// map keeps working in local dev without any configuration.
+const CARTO_BASE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const CARTO_API_KEY = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+const CARTO_TILE_URL = CARTO_API_KEY
+    ? `${CARTO_BASE_URL}?api_key=${CARTO_API_KEY}`
+    : CARTO_BASE_URL;
+
 // Fix for default marker icon
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
@@ -28,6 +39,13 @@ interface Point {
     lng: number;
     rank: number | null;
     hasData?: boolean;
+    /**
+     * Whether the parent scan actually has a target business (businessName or
+     * placeId). When false, rank===null means "we never had anything to match
+     * against" — NOT "the business was not found". Defaults to true so that
+     * existing callers keep their previous behaviour.
+     */
+    hasTarget?: boolean;
     id?: string;
     draggable?: boolean;
 }
@@ -90,20 +108,27 @@ const RankMarker = ({
         );
     }
 
-    // Determine color and label based on rank
+    // Determine color and label based on rank.
+    // Three distinct states:
+    //   1. ranked          -> green / amber / red numbered pin
+    //   2. no target set   -> hollow grey "?"  (nothing to match against)
+    //   3. not found       -> solid grey "X"   (target genuinely absent)
     let bgColor: string;
     let borderColor: string;
     let textColor: string;
     let label: string;
 
-    if (point.rank !== null && point.rank >= 1) {
+    const hasTarget = point.hasTarget !== false;
+    const isRanked = point.rank !== null && point.rank >= 1;
+
+    if (isRanked) {
         label = String(point.rank);
-        if (point.rank <= 3) {
+        if (point.rank! <= 3) {
             // Top 3 — Green
             bgColor = '#22c55e';
             borderColor = '#15803d';
             textColor = '#ffffff';
-        } else if (point.rank <= 10) {
+        } else if (point.rank! <= 10) {
             // 4-10 — Orange/Amber  
             bgColor = '#f59e0b';
             borderColor = '#b45309';
@@ -114,6 +139,13 @@ const RankMarker = ({
             borderColor = '#b91c1c';
             textColor = '#ffffff';
         }
+    } else if (!hasTarget) {
+        // No target business on the scan — nothing could be matched.
+        // Rendered hollow so it is visually distinct from a real miss.
+        label = '?';
+        bgColor = 'rgba(243, 244, 246, 0.9)';
+        borderColor = '#9ca3af';
+        textColor = '#6b7280';
     } else {
         // Not found — Dark with X
         label = '✕';
@@ -135,7 +167,7 @@ const RankMarker = ({
             height: ${size}px;
             border-radius: 50%;
             background: ${bgColor};
-            border: 2.5px solid ${borderColor};
+            border: 2.5px ${!isRanked && !hasTarget ? 'dashed' : 'solid'} ${borderColor};
             color: ${textColor};
             font-size: ${fontSize}px;
             font-weight: 700;
@@ -180,8 +212,13 @@ const RankMarker = ({
                 <Popup className="font-sans" autoPan={false}>
                     <div className="text-center p-1">
                         <div className="font-bold text-lg mb-1 text-gray-900">
-                            {point.rank !== null ? `#${point.rank}` : 'Not Found'}
+                            {isRanked ? `#${point.rank}` : !hasTarget ? 'No Target Set' : 'Not Found'}
                         </div>
+                        {!isRanked && !hasTarget && (
+                            <div className="text-[10px] text-gray-400 mb-1 max-w-[160px]">
+                                This scan has no business name or Place ID, so no rank could be resolved.
+                            </div>
+                        )}
                         <div className="text-xs text-gray-500">
                             Lat: {point.lat.toFixed(4)}<br />
                             Lng: {point.lng.toFixed(4)}
@@ -218,6 +255,9 @@ export default function LeafletMap({
     onGridMove,
     showHeatmap = false
 }: MapProps) {
+    // If no point carries a target, the whole scan had nothing to match against.
+    const scanHasTarget = points.length === 0 || points.some(p => p.hasTarget !== false);
+
     return (
         <div className="h-full w-full relative z-0 bg-gray-100">
             <MapContainer
@@ -232,7 +272,7 @@ export default function LeafletMap({
 
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    url={CARTO_TILE_URL}
                 />
                 <MapUpdater center={center} zoom={zoom} />
 
@@ -314,10 +354,17 @@ export default function LeafletMap({
                         <div className="w-5 h-5 rounded-full bg-red-500 border-2 border-red-700 flex items-center justify-center text-[9px] font-bold text-white">15</div>
                         <span className="text-gray-700">11 - 20</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-gray-600 border-2 border-gray-800 flex items-center justify-center text-[9px] font-bold text-white">✕</div>
-                        <span className="text-gray-700">Not Found</span>
-                    </div>
+                    {scanHasTarget ? (
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-gray-600 border-2 border-gray-800 flex items-center justify-center text-[9px] font-bold text-white">✕</div>
+                            <span className="text-gray-700">Not Found</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-gray-100 border-2 border-dashed border-gray-400 flex items-center justify-center text-[9px] font-bold text-gray-500">?</div>
+                            <span className="text-gray-700">No Target Set</span>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -331,4 +378,3 @@ export default function LeafletMap({
         </div>
     );
 }
-
