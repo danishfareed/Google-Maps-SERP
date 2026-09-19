@@ -15,6 +15,11 @@ files:
   - "electron/dist/**"
   - "electron/splash.html"
   - "!node_modules/**"
+  # playwright-core: bundled so the app can download its own browser without
+  # requiring Node/npx on the user's machine, and so the browser revision
+  # always matches the one the scanner looks for. Unpacked below — a child
+  # process cannot execute cli.js from inside the asar archive.
+  - "node_modules/playwright-core/**"
   # electron-updater + better-sqlite3 and all transitive deps
   - "node_modules/argparse/**"
   - "node_modules/base64-js/**"
@@ -103,6 +108,7 @@ extraResources:
 asar: true
 asarUnpack:
   - "node_modules/better-sqlite3/**"
+  - "node_modules/playwright-core/**"
 
 afterSign: scripts/after-sign.js
 

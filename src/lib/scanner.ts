@@ -2,7 +2,7 @@ import { prisma } from './prisma';
 import { generateGrid } from './grid';
 import { scrapeGMB } from './scraper';
 import { Browser, BrowserContext, Page } from 'playwright-core';
-import { chromium, getElectronLaunchDefaults } from './browser';
+import { launchChromium, getElectronLaunchDefaults } from './browser';
 import { logger } from './logger';
 import { dispatchWebhook } from './webhookDispatcher';
 import type { Scan } from '@prisma/client';
@@ -189,7 +189,7 @@ export async function runScan(scanId: string) {
             }
 
             try {
-                return await chromium.launch(launchOptions);
+                return await launchChromium(launchOptions);
             } catch (launchErr: any) {
                 await logger.warn(`Failed to launch browser with proxy ${launchOptions.proxy?.server || 'DIRECT'}: ${launchErr.message}. Retrying without proxy...`, 'SCANNER');
 
@@ -203,7 +203,7 @@ export async function runScan(scanId: string) {
 
                 // Fallback to direct connection
                 delete launchOptions.proxy;
-                return await chromium.launch(launchOptions);
+                return await launchChromium(launchOptions);
             }
         }
 

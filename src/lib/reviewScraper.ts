@@ -1,5 +1,5 @@
 import { Browser, Page, BrowserContext } from 'playwright-core';
-import { chromium, getElectronLaunchDefaults } from './browser';
+import { launchChromium, getElectronLaunchDefaults } from './browser';
 import { logger } from './logger';
 
 export interface ScrapedReview {
@@ -43,7 +43,7 @@ export async function scrapeGoogleReviews(
 
     try {
         log('Launching browser...');
-        browser = await chromium.launch({ headless: true, ...getElectronLaunchDefaults() });
+        browser = await launchChromium({ headless: true, ...getElectronLaunchDefaults() });
 
         const context = await browser.newContext({
             viewport: { width: 1400, height: 900 },

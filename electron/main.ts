@@ -118,7 +118,23 @@ function createSplashWindow(): BrowserWindow {
     },
   });
 
-  splash.loadFile(path.join(__dirname, 'splash.html'));
+  // splash.html is copied next to the compiled main.js by copy-static.js.
+  // The source location is checked as a fallback so a packaging slip degrades
+  // to an empty splash rather than a chrome-error page (which then broke every
+  // status update — see the executeJavaScript note in updateSplashStatus).
+  const splashFile = [
+    path.join(__dirname, 'splash.html'),
+    path.join(__dirname, '..', 'splash.html'),
+  ].find((candidate) => fs.existsSync(candidate));
+
+  if (splashFile) {
+    splash.loadFile(splashFile).catch((err: any) => {
+      log('ERROR', `Failed to load splash screen: ${err?.message || err}`);
+    });
+  } else {
+    log('ERROR', 'splash.html not found — continuing without splash content');
+  }
+
   return splash;
 }
 
@@ -483,8 +499,11 @@ function applyContentSecurityPolicy(port: number): void {
     `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${localOrigin}`,
     `style-src 'self' 'unsafe-inline' ${localOrigin}`,
     `font-src 'self' data: ${localOrigin}`,
-    // Map tiles (OpenStreetMap) and data URIs for Leaflet markers
-    `img-src 'self' data: blob: ${localOrigin} https://*.tile.openstreetmap.org https://*.openstreetmap.org`,
+    // Map tiles and data URIs for Leaflet markers.
+    //  - basemaps.cartocdn.com: the tile layer the maps actually render
+    //  - cdnjs.cloudflare.com:  Leaflet's default marker icon/shadow images
+    //  - openstreetmap.org:     kept for the attribution / fallback tile layers
+    `img-src 'self' data: blob: ${localOrigin} https://*.basemaps.cartocdn.com https://cdnjs.cloudflare.com https://*.tile.openstreetmap.org https://*.openstreetmap.org`,
     // External APIs this app uses:
     //  - nominatim: address geocoding
     //  - overpass-api: smart grid neighborhood lookup
@@ -563,9 +582,14 @@ app.whenReady().then(async () => {
     }
 
     // Check Playwright browsers in background
-    ensurePlaywrightBrowser(mainWindow).then((installed) => {
-      if (installed) setPlaywrightEnvVars();
-    });
+    ensurePlaywrightBrowser(mainWindow)
+      .then((installed) => {
+        if (installed) setPlaywrightEnvVars();
+      })
+      .catch((err: any) => {
+        // Recoverable: the scanner falls back to system Chrome.
+        log('ERROR', 'Browser setup failed:', err?.message || String(err));
+      });
 
     mainWindow.on('closed', () => {
       mainWindow = null;
@@ -617,9 +641,15 @@ app.on('will-quit', () => {
 function updateSplashStatus(message: string): void {
   try {
     if (splashWindow && !splashWindow.isDestroyed()) {
-      splashWindow.webContents.executeJavaScript(
-        `document.getElementById('status').textContent = '${message.replace(/'/g, "\\'")}'`
-      );
+      // The surrounding try/catch cannot catch this: executeJavaScript
+      // returns a promise, and a rejection here is what users saw as
+      // "Script failed to execute" crash dialogs on every launch.
+      // Guard the element lookup too — it is absent if the splash failed to load.
+      splashWindow.webContents
+        .executeJavaScript(
+          `(() => { const el = document.getElementById('status'); if (el) el.textContent = ${JSON.stringify(message)}; })()`
+        )
+        .catch(() => { /* splash closed, or content never loaded */ });
     }
   } catch { /* splash may be gone */ }
 }

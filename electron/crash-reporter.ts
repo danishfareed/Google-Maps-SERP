@@ -173,7 +173,9 @@ function sanitizePaths(text: string): string {
 
 function buildGitHubIssueUrl(report: CrashReport): string {
   // Keep title short — GitHub truncates it in the UI anyway
-  const shortError = report.error.replace(/\n.*/s, '').substring(0, 100);
+  // [\s\S] rather than the `s` (dotAll) flag: the root tsconfig targets ES2017,
+  // where that flag is not available.
+  const shortError = report.error.replace(/\n[\s\S]*/, '').substring(0, 100);
   const title = `[Crash] ${shortError}`;
 
   const body = [

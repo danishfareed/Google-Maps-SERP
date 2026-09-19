@@ -50,4 +50,18 @@ const publicDest = path.join(root, '.next', 'standalone', 'public');
 console.log('[copy-static] Copying public/...');
 copyDirSync(publicSrc, publicDest, false);
 
+// Copy electron/splash.html -> electron/dist/splash.html
+// main.js runs from electron/dist/ and loads splash.html relative to __dirname.
+// tsc only emits .js, so without this copy the splash window loads a
+// chrome-error page and the status injection throws on every launch.
+const splashSrc = path.join(root, 'electron', 'splash.html');
+const splashDest = path.join(root, 'electron', 'dist', 'splash.html');
+console.log('[copy-static] Copying electron/splash.html...');
+if (!fs.existsSync(splashSrc)) {
+  console.error(`[copy-static] ERROR: Required file not found: ${splashSrc}`);
+  process.exit(1);
+}
+fs.mkdirSync(path.dirname(splashDest), { recursive: true });
+fs.copyFileSync(splashSrc, splashDest);
+
 console.log('[copy-static] Done.');

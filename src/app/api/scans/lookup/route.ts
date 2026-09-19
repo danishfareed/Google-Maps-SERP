@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Browser } from 'playwright-core';
-import { chromium, getElectronLaunchDefaults } from '@/lib/browser';
+import { launchChromium, getElectronLaunchDefaults } from '@/lib/browser';
 import { logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Query or URL is required' }, { status: 400 });
         }
 
-        browser = await chromium.launch({ headless: true, ...getElectronLaunchDefaults() });
+        browser = await launchChromium({ headless: true, ...getElectronLaunchDefaults() });
         const context = await browser.newContext({
             viewport: { width: 1280, height: 800 },
             userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

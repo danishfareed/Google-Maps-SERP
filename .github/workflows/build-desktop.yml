@@ -62,6 +62,12 @@ jobs:
       - name: Compile Electron TypeScript
         run: npm run electron:compile
 
+      # Guards the packaging/wiring bugs behind issues #6-#26: missing splash
+      # asset, CSP-blocked map tiles, npx-based browser install, stale browser
+      # path table. These only break in the installed app, never in dev.
+      - name: Verify build invariants
+        run: npm run verify
+
       - name: Rebuild better-sqlite3 for Electron
         run: npx @electron/rebuild -f -w better-sqlite3
 

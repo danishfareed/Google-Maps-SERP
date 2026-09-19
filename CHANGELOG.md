@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.5] - 2026-09-19
+
+### Startup Crash, Windows Browser Install & Blank Maps
+
+Fixes every open crash report from 1.9.4. Three independent packaging bugs made the installed app unusable while `npm run dev` stayed perfectly healthy — none of them could reproduce outside a packaged build.
+
+#### Fixed
+- **Startup crash dialog on every launch** (#6, #7, #9, #17, #19, #23, #26) — `splash.html` was never copied into `electron/dist/`, so the splash window loaded a `chrome-error://` page instead. The status updates then called `document.getElementById('status').textContent` on an element that did not exist, and because `executeJavaScript()` returns a promise, the surrounding `try/catch` could not catch the rejection. Every launch produced "Script failed to execute, this normally means an error was thrown." Affected macOS and Windows equally. The build now copies the file, the path resolution falls back to the source location, and the status injection guards the element lookup and catches the promise.
+- **`spawn EINVAL` on Windows** (#8, #10, #11, #13, #16, #20, #21, #22, #25) — the browser download ran `execFile('npx.cmd', ...)` without `shell: true`, which throws `EINVAL` on Node 18.20.2+/20.12.2+ (the CVE-2024-27980 hardening that Electron 34 ships). It also silently assumed the user had Node.js installed. The download now runs the bundled `playwright-core` CLI under the Electron binary in Node mode (`ELECTRON_RUN_AS_NODE=1`), so it needs neither `npx` nor a system Node install.
+- **Downloaded browser reported as missing** (#11, #18, #26) — `npx playwright-core install` was unpinned, so it fetched the *latest* playwright-core and installed its browser revision (e.g. 1223) while the app looked for the revision its own pinned playwright-core expects (1208). Scans failed with "Executable doesn't exist at .../chromium_headless_shell-1208/...". Using the bundled CLI keeps the revision in lockstep, and `chromium-headless-shell` is now installed alongside `chromium` (the scanner launches headless, which uses the separate shell build).
+- **Browser re-downloaded on every launch** — the "is it already installed?" probe hardcoded `chrome-win/`, `chrome-mac/Chromium.app` and `chrome-linux/`, but Playwright 1.58 installs Chrome-for-Testing layouts (`chrome-win64`, `chrome-mac-arm64/Google Chrome for Testing.app`, `chrome-linux64`). The probe therefore never matched on *any* platform, so the app re-ran the failing download every time it started. Path resolution now delegates to `playwright-core` itself rather than a hand-maintained table.
+- **Maps rendered blank/gray** (#24) — the CSP added in 1.9.3 allowed only the OpenStreetMap domains in `img-src`, but the map components load tiles from `*.basemaps.cartocdn.com`. Every tile was blocked inside Electron while the same server rendered fine in a normal browser. Leaflet's default marker icons, served from `cdnjs.cloudflare.com`, were blocked by the same directive. Both origins are now allowed.
+- **Browser setup failure crashed the app** — `ensurePlaywrightBrowser()` was called without a `.catch()`, so a failed or blocked download surfaced as an unhandled rejection and a crash dialog instead of a recoverable warning.
+- **Unhelpful scan error during first-run download** — a scan started while the one-time browser download was still in progress showed Playwright's raw "run `npx playwright install`" message, which does not apply to an installed desktop app. All five launch sites now report that the engine is still downloading.
+- **`tsc --noEmit` failure** — `crash-reporter.ts` used the `s` (dotAll) regex flag, unavailable under the root tsconfig's ES2017 target. Rewritten with an equivalent character class.
+
+#### Added
+- **Build invariant verification** (`scripts/verify-build.js`, `npm run verify`) — gates the release on the wiring these bugs slipped through: the splash asset is present, `img-src` covers every remote image host referenced in `src/`, the installer does not shell out to `npx`, `playwright-core` is packaged and asar-unpacked, and browser path resolution is delegated rather than hardcoded. Runs as part of `electron:prepare` and as its own CI step.
+- **Splash regression test** (`scripts/test-splash.js`, `npm run test:splash`) — an Electron harness covering both the happy path and the failure path, asserting that a missing splash file produces no unhandled rejection. Verified to reproduce the original crash verbatim when run against the 1.9.4 implementation.
+
+#### Changed
+- **`playwright-core` is now bundled with the desktop app** — added to the electron-builder file whitelist and to `asarUnpack` (a child process cannot execute `cli.js` from inside `app.asar`). Adds ~10MB to the installer and removes the Node.js/npx requirement for end users.
+
+---
+
 ## [1.9.4] - 2026-03-22
 
 ### Crash Reporting
