@@ -499,11 +499,10 @@ function applyContentSecurityPolicy(port: number): void {
     `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${localOrigin}`,
     `style-src 'self' 'unsafe-inline' ${localOrigin}`,
     `font-src 'self' data: ${localOrigin}`,
-    // Map tiles and data URIs for Leaflet markers.
-    //  - basemaps.cartocdn.com: the tile layer the maps actually render
-    //  - cdnjs.cloudflare.com:  Leaflet's default marker icon/shadow images
-    //  - openstreetmap.org:     kept for the attribution / fallback tile layers
-    `img-src 'self' data: blob: ${localOrigin} https://*.basemaps.cartocdn.com https://cdnjs.cloudflare.com https://*.tile.openstreetmap.org https://*.openstreetmap.org`,
+    // Map tiles come from OpenStreetMap (no API key). Leaflet's marker images
+    // are bundled with the app, so they load from ${localOrigin} — no CDN
+    // origin is needed here.
+    `img-src 'self' data: blob: ${localOrigin} https://*.openstreetmap.org`,
     // External APIs this app uses:
     //  - nominatim: address geocoding
     //  - overpass-api: smart grid neighborhood lookup

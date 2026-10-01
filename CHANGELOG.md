@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.6] - 2026-09-30
+
+### Maps Actually Render — OpenStreetMap Replaces CARTO
+
+1.9.5 unblocked the map tiles in the Content Security Policy, but the maps still came up blank. The CSP was only half the problem: CARTO had moved its basemaps behind an API key, and was answering every tile request with `HTTP 200` and a 2KB placeholder image stamped "API KEY REQUIRED". Nothing in the app looked broken — the tiles just carried no map.
+
+#### Fixed
+- **Blank/gray maps, for real this time** (#24) — the basemap now comes from OpenStreetMap's standard tiles, which need no API key, no account and no sign-up. Verified end to end in a browser: tiles return 200 from `tile.openstreetmap.org` and the full 49-point grid renders with correct rank colours.
+- **Leaflet marker images no longer come from a CDN** — the default marker, retina marker and shadow are imported from the `leaflet` package that is already a dependency, so they are bundled with the app. Maps now draw their markers with no network access at all, and the CSP needs no CDN origin.
+- **Rank colours agree across the UI** — the list thumbnails used a different green (`#10b981`) and an `X` glyph for not-found, where the map and its legend used `#22c55e` and `✕`. All three now match.
+
+#### Changed
+- **CSP `img-src` tightened** — `*.basemaps.cartocdn.com` and `cdnjs.cloudflare.com` are gone; only `*.openstreetmap.org` remains alongside the local server.
+- **Grid Status thumbnails mount lazily** — the tab rendered one full Leaflet instance per result row, so a 49-point scan mounted 49 maps and fired a few hundred tile requests in one burst. CARTO absorbed that; OpenStreetMap's tile usage policy does not. Each thumbnail now mounts only when its row scrolls near the viewport (49 slots, ~4 instances mounted at a time), which also makes the tab noticeably faster to open.
+- **Tile source lives in one place** — `src/lib/mapTiles.ts` holds the tile URL and attribution, so the Electron CSP and both map components cannot drift apart. The build verification derives the allowed image hosts from the source, so a future provider change fails the build if the CSP is not updated with it.
+
+#### Known trade-offs
+- OpenStreetMap standard tiles have no `@2x` variant, so the basemap is slightly softer on Retina displays than CARTO's retina tiles were. No API-key-free provider offers `@2x` raster tiles.
+- OpenStreetMap's cartography is more saturated than CARTO's Voyager style, so the basemap reads busier than the UI was originally designed around.
+
+#### Notes
+- `assetUrl()` in `src/lib/mapTiles.ts` resolves bundled image imports. Next's type declarations describe a `*.png` import as `StaticImageData`, but Turbopack emits a plain URL string for images resolved out of `node_modules`; `.src` type-checks against the declaration and is `undefined` at runtime. The helper accepts both shapes.
+
+---
+
 ## [1.9.5] - 2026-09-19
 
 ### Startup Crash, Windows Browser Install & Blank Maps

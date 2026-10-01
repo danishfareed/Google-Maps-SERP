@@ -13,14 +13,19 @@ import {
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import { TILE_URL, TILE_ATTRIBUTION, TILE_MAX_ZOOM, assetUrl } from '@/lib/mapTiles';
 
-// Fix for default marker icon
+// Default marker images ship with the leaflet package; bundling them keeps the
+// app working offline and needs no CDN origin in the Electron CSP.
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconRetinaUrl: assetUrl(markerIcon2x),
+    iconUrl: assetUrl(markerIcon),
+    shadowUrl: assetUrl(markerShadow),
 });
 
 interface Point {
@@ -231,8 +236,9 @@ export default function LeafletMap({
                 <MapResizer />
 
                 <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    attribution={TILE_ATTRIBUTION}
+                    url={TILE_URL}
+                    maxZoom={TILE_MAX_ZOOM}
                 />
                 <MapUpdater center={center} zoom={zoom} />
 

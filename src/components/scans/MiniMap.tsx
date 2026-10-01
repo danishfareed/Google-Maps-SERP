@@ -1,9 +1,14 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { Maximize2 } from 'lucide-react';
+import { TILE_URL, TILE_MAX_ZOOM, assetUrl } from '@/lib/mapTiles';
 
 interface MiniMapProps {
     lat: number;
@@ -12,20 +17,20 @@ interface MiniMapProps {
     onEnlarge: (lat: number, lng: number, rank: number | null | undefined) => void;
 }
 
-// Generate the numbered marker icon (same as the main map)
+// Generate the numbered marker icon.
+// Colours match the main map and its legend — keep the three in step.
 const createNumberedMarker = (rank: number | null | undefined, size = 24) => {
-    let bgColor = '#94a3b8'; // gray
-    let textColor = '#ffffff';
-    let label = 'X'; // Default for unranked / quick scan
+    let bgColor = '#4b5563'; // gray — not found
+    let label = '✕';
 
-    if (rank) {
-        label = rank.toString();
+    if (rank !== null && rank !== undefined && rank >= 1) {
+        label = String(rank);
         if (rank <= 3) {
-            bgColor = '#10b981'; // emerald-500
+            bgColor = '#22c55e'; // green — top 3
         } else if (rank <= 10) {
-            bgColor = '#f59e0b'; // amber-500
+            bgColor = '#f59e0b'; // amber — 4-10
         } else {
-            bgColor = '#ef4444'; // red-500
+            bgColor = '#ef4444'; // red — 11-20
         }
     }
 
@@ -34,7 +39,7 @@ const createNumberedMarker = (rank: number | null | undefined, size = 24) => {
         html: `
             <div style="
                 background-color: ${bgColor};
-                color: ${textColor};
+                color: #ffffff;
                 width: ${size}px;
                 height: ${size}px;
                 border-radius: 50%;
@@ -55,25 +60,57 @@ const createNumberedMarker = (rank: number | null | undefined, size = 24) => {
 };
 
 export function MiniMap({ lat, lng, rank, onEnlarge }: MiniMapProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [inView, setInView] = useState(false);
+
+    // One thumbnail renders per result row, so a 49-point scan would otherwise
+    // mount 49 Leaflet instances and burst a few hundred tile requests on tab
+    // open — more than OSM's tile usage policy allows from one client. Mount
+    // each map only once its row is actually near the viewport.
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        if (typeof IntersectionObserver === 'undefined') {
+            setInView(true); // no observer support: just render
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((e) => e.isIntersecting)) {
+                    setInView(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: '200px' } // start loading just before it scrolls in
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm group">
-            <MapContainer
-                center={[lat, lng]}
-                zoom={14}
-                zoomControl={false}
-                dragging={false}
-                scrollWheelZoom={false}
-                doubleClickZoom={false}
-                touchZoom={false}
-                keyboard={false}
-                attributionControl={false}
-                className="w-full h-full z-0"
-            >
-                <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                />
-                <Marker position={[lat, lng]} icon={createNumberedMarker(rank, 24)} />
-            </MapContainer>
+        <div
+            ref={containerRef}
+            className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm group bg-gray-100"
+        >
+            {inView && (
+                <MapContainer
+                    center={[lat, lng]}
+                    zoom={14}
+                    zoomControl={false}
+                    dragging={false}
+                    scrollWheelZoom={false}
+                    doubleClickZoom={false}
+                    touchZoom={false}
+                    keyboard={false}
+                    attributionControl={false}
+                    className="w-full h-full z-0"
+                >
+                    <TileLayer url={TILE_URL} maxZoom={TILE_MAX_ZOOM} />
+                    <Marker position={[lat, lng]} icon={createNumberedMarker(rank, 24)} />
+                </MapContainer>
+            )}
 
             {/* Enlarge Overlay Button */}
             <div
@@ -91,12 +128,14 @@ export function MiniMap({ lat, lng, rank, onEnlarge }: MiniMapProps) {
     );
 }
 
-// Ensure the CSS handles any leaflet default image issues
+// Leaflet's default marker images ship with the package — bundle them instead
+// of pulling from a CDN, so the app works offline and needs no CDN origin in
+// the Electron CSP.
 if (typeof window !== 'undefined') {
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        iconRetinaUrl: assetUrl(markerIcon2x),
+        iconUrl: assetUrl(markerIcon),
+        shadowUrl: assetUrl(markerShadow),
     });
 }
